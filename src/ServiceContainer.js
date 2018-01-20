@@ -6,7 +6,7 @@ type InjectCallback = {
   (...args: any[]): any
 };
 
-export default class ApplicationContainer extends Container {
+export default class ServiceContainer extends Container {
 
   constructor (items: Registry) {
     super(items);

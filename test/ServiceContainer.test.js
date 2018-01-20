@@ -4,13 +4,13 @@ import {describe, it} from 'mocha'
 import {expect} from 'chai'
 
 import assertRejected from './assertRejected'
-import ApplicationContainer from '../src/ApplicationContainer'
+import ServiceContainer from '../src/ServiceContainer'
 
 
-describe('ApplicationContainer', () => {
+describe('ServiceContainer', () => {
   describe('inject', () => {
     it('should call the method with injected services', () => {
-      const container = new ApplicationContainer({
+      const container = new ServiceContainer({
         foo: 'bar',
         baz: 'bazz',
       });
@@ -26,7 +26,7 @@ describe('ApplicationContainer', () => {
       expect(called).to.be.true;
     })
     it('should throw on invalid service', () => {
-      const container = new ApplicationContainer({});
+      const container = new ServiceContainer({});
 
       let called = false;
 
