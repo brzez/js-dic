@@ -35,7 +35,6 @@ describe('ApplicationContainer', () => {
       });
 
       expect(throwingfn).to.throw;
-
       expect(called).to.be.false;
     })
   })

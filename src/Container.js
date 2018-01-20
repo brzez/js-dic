@@ -11,4 +11,8 @@ export default class Container {
   get (name: string): any {
     return this.items[name];
   }
+
+  exists (name: string): bool {
+    return name in this.items;
+  }
 }
