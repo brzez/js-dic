@@ -1,4 +1,6 @@
 // @flow
+import typeof Registry from './Registry'
+import Container from './Container'
 
 type ServiceProvider = {
   (context: Context):?Promise<any>
@@ -10,26 +12,29 @@ type ServiceRegistry = {
 
 type Context = {
   register: (value: any) => any,
-
 };
 
 export default class Kernel {
-  providers: ServiceRegistry;
   booted: bool = false;
+
+  providers: ServiceRegistry;
+  registry: Registry = {};
 
   constructor (providers: ServiceRegistry) {
     this.providers = providers;
   }
 
-  createContext (alias: string): Context {
+  createContext (registry: Registry, alias: string): Context {
     return {
-      register: (value: any) => {} // todo
+      register: (value: any) => {
+        registry[alias] = value; 
+      }
     };
   }
 
   bootService (alias: string): ?Promise<any> {
     const provider = this.providers[alias];
-    const context = this.createContext(alias);
+    const context = this.createContext(this.registry, alias);
 
     return provider(context);
   }
@@ -46,6 +51,6 @@ export default class Kernel {
     
     this.booted = true;
 
-    return this;
+    return new Container(this.registry);
   }
 }

@@ -1,6 +1,5 @@
 // @flow
-
-type Registry = {[alias: string]: any};
+import typeof Registry from './Registry'
 
 export default class Container {
   items: Registry;
