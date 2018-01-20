@@ -17,10 +17,13 @@ describe('ServiceContainer', () => {
 
       let called = false;
 
-      container.inject(['foo', 'baz'], (foo, baz) => {
-        called = true;
-        expect(foo).to.be.equal('bar')
-        expect(baz).to.be.equal('bazz')
+      container.inject({
+        dependencies:['foo', 'baz'], 
+        factory: (foo, baz) => {
+          called = true;
+          expect(foo).to.be.equal('bar')
+          expect(baz).to.be.equal('bazz')
+        }
       });
 
       expect(called).to.be.true;
@@ -30,8 +33,11 @@ describe('ServiceContainer', () => {
 
       let called = false;
 
-      const throwingfn = () => container.inject(['foo', 'baz'], (foo, baz) => {
-        called = true;
+      const throwingfn = () => container.inject({
+        dependencies: ['foo', 'baz'],
+        factory: (foo, baz) => {
+          called = true;
+        }
       });
 
       expect(throwingfn).to.throw;

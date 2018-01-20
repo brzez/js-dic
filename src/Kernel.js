@@ -1,7 +1,7 @@
 // @flow
 import typeof Registry from './Registry'
 import type {Bootable} from './ServiceContainer'
-
+import type {InjectSignature, InjectCallback} from './ServiceContainer'
 import ServiceContainer from './ServiceContainer'
 
 type ServiceProvider = {
@@ -14,6 +14,7 @@ type ServiceRegistry = {
 
 type Context = {
   register: (bootable: Bootable) => any,
+  ready: InjectSignature,
 };
 
 export default class Kernel {
@@ -21,6 +22,7 @@ export default class Kernel {
 
   providers: ServiceRegistry;
   registry: Registry = {};
+  readyCallbacks: Bootable[] = [];
 
   constructor (providers: ServiceRegistry) {
     this.providers = providers;
@@ -30,6 +32,9 @@ export default class Kernel {
     return {
       register: (bootable: Bootable) => {
         return registry[alias] = bootable;
+      },
+      ready: (factory: InjectCallback, dependencies?: string[]): any => {
+        this.readyCallbacks.push({factory, dependencies})
       }
     };
   }
@@ -39,6 +44,11 @@ export default class Kernel {
     const context = this.createContext(this.registry, alias);
 
     return provider(context);
+  }
+
+  fireReadyCallbacks (container: ServiceContainer) {
+    this.readyCallbacks.forEach(callback => container.inject(callback));
+    this.readyCallbacks = [];
   }
 
   async boot () {
@@ -52,7 +62,8 @@ export default class Kernel {
     await Promise.all(bootPromises);
     
     this.booted = true;
-
-    return new ServiceContainer(this.registry);
+    const container = new ServiceContainer(this.registry);
+    this.fireReadyCallbacks(container);
+    return container;
   }
 }
