@@ -44,11 +44,15 @@ describe('Kernel', () => {
   })
 
   describe('register', () => {
-    it('should register a value in resulting container', async () => {
-      
+    it('should resolve dependencies', async () => {
       const kernel = new Kernel({
-        foo: ({register}) => register('bar'),
-        baz: ({register}) => register(1337),
+        foo: ({register}) => register({
+          factory: () => 'bar',
+          dependencies: ['baz'],
+        }),
+        baz: ({register}) => register({
+          factory: () => 1337,
+        }),
       });
       
       const container = await kernel.boot();

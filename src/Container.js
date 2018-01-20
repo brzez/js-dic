@@ -4,7 +4,7 @@ import typeof Registry from './Registry'
 export default class Container {
   items: Registry;
 
-  constructor (items: Registry) {
+  constructor (items: Registry = {}) {
     this.items = {...items};
   }
 
