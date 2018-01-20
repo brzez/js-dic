@@ -13,7 +13,7 @@ type Context = {
 
 };
 
-export default class Container {
+export default class Kernel {
   providers: ServiceRegistry;
   booted: bool = false;
 
@@ -36,7 +36,7 @@ export default class Container {
 
   async boot () {
     if (this.booted) {
-      throw new Error('Container already booted');
+      throw new Error('Kernel already booted');
     }
 
     const bootPromises = Object.keys(this.providers)

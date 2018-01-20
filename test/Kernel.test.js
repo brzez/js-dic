@@ -4,14 +4,14 @@ import {describe, it} from 'mocha'
 import {expect} from 'chai'
 
 import assertRejected from './assertRejected'
-import Container from '../src/Container'
+import Kernel from '../src/Kernel'
 
 
-describe('Container', () => {
+describe('Kernel', () => {
   it('calls the provider functions', async () => {
     let numBooted = 0;
 
-    const container = new Container({
+    const kernel = new Kernel({
       a: () => {
         numBooted++;
         return new Promise(resolve => resolve())
@@ -21,15 +21,15 @@ describe('Container', () => {
       },
     });
 
-    await container.boot();
+    await kernel.boot();
     expect(numBooted).to.be.equal(2)
   })
 
   it('can be only booted once', async () => {
-    const container = new Container({});
+    const kernel = new Kernel({});
 
-    await container.boot();
+    await kernel.boot();
     
-    await assertRejected(() => container.boot());
+    await assertRejected(() => kernel.boot());
   })
 })
