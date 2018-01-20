@@ -11,8 +11,8 @@ describe('ServiceContainer', () => {
   describe('inject', () => {
     it('should call the method with injected services', () => {
       const container = new ServiceContainer({
-        foo: 'bar',
-        baz: 'bazz',
+        foo: {factory: () => 'bar'},
+        baz: {factory: () => 'bazz'},
       });
 
       let called = false;

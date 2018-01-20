@@ -17,7 +17,7 @@ export type Bootable = {
 
 export default class ServiceContainer extends Container {
 
-  constructor (bootables: Registry) {
+  constructor (bootables: {[string]: Bootable}) {
     super();
 
     const boot = (alias: string) => {
