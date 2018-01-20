@@ -61,4 +61,20 @@ describe('Kernel', () => {
       expect(container.get('baz')).to.be.equal(1337);
     })
   })
+
+  describe('ready', () => {
+    it('is called after service boot', async () => {
+      let readyCalls = 0;
+
+      const kernel = new Kernel({
+        a: ({register, ready}) => ready(() => ++readyCalls),
+        b: ({register, ready}) => ready(() => ++readyCalls),
+        c: ({register, ready}) => ready(() => ++readyCalls),
+      });
+
+      expect(readyCalls).to.be.equal(0);
+      await kernel.boot();
+      expect(readyCalls).to.be.equal(3);
+    })
+  })
 })
