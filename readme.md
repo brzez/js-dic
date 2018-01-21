@@ -4,7 +4,7 @@
 Usage:
 
 ```javascript
-import boot from 'js-dic'
+import boot from 'dic'
 
 boot({
   thing: {
