@@ -23,14 +23,28 @@ describe('ServiceContainer', () => {
       expect(container.get('b')).to.be.equal('b c');
       expect(container.get('c')).to.be.equal('c');
     })
+    it('fails on circular dependency', async () => {
+      const container = new ServiceContainer();
+
+      const error = await assertRejected(() => {
+        return container.boot({
+          a: service((b, c) => 1,['b']),
+          b: service((c) => 2, ['a']),
+        })
+      });
+
+      expect(error).to.be.instanceof(Error);
+    })
   })
 
   describe('inject', () => {
-    it('should call the method with injected services', () => {
-      const container = new ServiceContainer({
-        foo: {factory: () => 'bar'},
-        baz: {factory: () => 'bazz'},
-      });
+    it('should call the method with injected services', async () => {
+      const container = new ServiceContainer();
+
+      await container.boot({
+        foo: service(() => 'bar'),
+        baz: service(() => 'bazz'),
+      })
 
       let called = false;
 
@@ -46,7 +60,7 @@ describe('ServiceContainer', () => {
       expect(called).to.be.true;
     })
     it('should throw on invalid service', () => {
-      const container = new ServiceContainer({});
+      const container = new ServiceContainer();
 
       let called = false;
 

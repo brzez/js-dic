@@ -12,16 +12,29 @@ export type Injectable = {
 };
 
 export default class ServiceContainer extends Container {
+  constructor () {
+    super();
+  }
 
   async boot (services: {[string]: Injectable}) {
+    const dependencyStack = {};
+
     const bootService = async (alias: string) => {
+      dependencyStack[alias] = true;
+
       const bootable = services[alias];
       const {dependencies}: Injectable = services[alias];
       // 1. get unregistered deps
       const notBooted = dependencies.filter(dep => !this.exists(dep));
       // 2. boot them
       for (let dependency of notBooted) {
+        if (dependency in dependencyStack) {
+          throw new Error(`Circular dependency detected (resolving ${dependency} from ${alias})`)
+        }
+
         await bootService(dependency);
+        
+        delete dependencyStack[dependency];
       }
       // 3. boot this service
       if (this.exists(alias)) {
