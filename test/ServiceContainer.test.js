@@ -6,8 +6,25 @@ import {expect} from 'chai'
 import assertRejected from './assertRejected'
 import ServiceContainer from '../src/ServiceContainer'
 
+const service = (factory, dependencies = []) => ({factory, dependencies});
 
 describe('ServiceContainer', () => {
+  describe('boot', () => {
+    it('resolves dependencies in correct order', async () => {
+      const container = new ServiceContainer();
+
+      await container.boot({
+        a: service((b, c) => `a ${b} ${c}`,['b', 'c']),
+        b: service((c) => `b ${c}`, ['c']),
+        c: service(() => `c`),
+      })
+
+      expect(container.get('a')).to.be.equal('a b c c');
+      expect(container.get('b')).to.be.equal('b c');
+      expect(container.get('c')).to.be.equal('c');
+    })
+  })
+
   describe('inject', () => {
     it('should call the method with injected services', () => {
       const container = new ServiceContainer({

@@ -20,7 +20,9 @@ export default class ServiceContainer extends Container {
       // 1. get unregistered deps
       const notBooted = dependencies.filter(dep => !this.exists(dep));
       // 2. boot them
-      notBooted.forEach(alias => bootService(alias));
+      for (let dependency of notBooted) {
+        await bootService(dependency);
+      }
       // 3. boot this service
       if (this.exists(alias)) {
         return
