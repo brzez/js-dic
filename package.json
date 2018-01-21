@@ -1,11 +1,12 @@
 {
   "name": "dic",
-  "version": "0.0.1",
-  "description": "",
-  "main": "index.js",
+  "version": "0.9.3",
+  "description": "dependency injection container",
+  "main": "dist/index.js",
   "scripts": {
     "flow": "flow",
-    "test": "mocha --require babel-core/register --require babel-polyfill \"test/**/*.js\""
+    "test": "mocha --require babel-core/register --require babel-polyfill \"test/**/*.js\"",
+    "build": "flow && babel src -d dist"
   },
   "author": "pawel brzezinski",
   "license": "ISC",
