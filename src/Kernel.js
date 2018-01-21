@@ -1,6 +1,6 @@
 // @flow
 import typeof Registry from './Registry'
-import type {Bootable} from './ServiceContainer'
+import type {Injectable} from './ServiceContainer'
 import type {InjectSignature, InjectCallback} from './ServiceContainer'
 import ServiceContainer from './ServiceContainer'
 
@@ -8,62 +8,46 @@ type ServiceProvider = {
   (context: Context):?Promise<any>
 };
 
+type ServiceDefinition = ServiceProvider|Injectable;
+
 type ServiceRegistry = {
-  [alias: string]: ServiceProvider;
+  [alias: string]: ServiceDefinition;
 };
 
 type Context = {
-  register: (bootable: Bootable) => any,
+  register: (Injectable: Injectable) => any,
   ready: InjectSignature,
 };
 
 export default class Kernel {
   booted: bool = false;
+  services: ServiceRegistry;
 
-  providers: ServiceRegistry;
-  registry: Registry = {};
-  readyCallbacks: Bootable[] = [];
-
-  constructor (providers: ServiceRegistry) {
-    this.providers = providers;
+  constructor (services: ServiceRegistry) {
+    this.services = services;
   }
 
-  createContext (registry: Registry, alias: string): Context {
-    return {
-      register: (bootable: Bootable) => {
-        return registry[alias] = bootable;
-      },
-      ready: (factory: InjectCallback, dependencies?: string[]): any => {
-        this.readyCallbacks.push({factory, dependencies})
-      }
-    };
-  }
-
-  bootService (alias: string): ?Promise<any> {
-    const provider = this.providers[alias];
-    const context = this.createContext(this.registry, alias);
-
-    return provider(context);
-  }
-
-  fireReadyCallbacks (container: ServiceContainer) {
-    this.readyCallbacks.forEach(callback => container.inject(callback));
-    this.readyCallbacks = [];
+  normalizeInjectable (service: ServiceDefinition) {
+    if (typeof service === 'function') {
+      return {factory: service, dependencies: []};
+    }
+    return service;
   }
 
   async boot () {
     if (this.booted) {
       throw new Error('Kernel already booted');
     }
-
-    const bootPromises = Object.keys(this.providers)
-      .map(alias => this.bootService(alias));
-
-    await Promise.all(bootPromises);
     
     this.booted = true;
-    const container = new ServiceContainer(this.registry);
-    this.fireReadyCallbacks(container);
+
+    const normalized = {};
+
+    Object.keys(this.services).forEach(alias => {
+      normalized[alias] = this.services[alias];
+    });
+
+    const container = new ServiceContainer(normalized);
     return container;
   }
 }

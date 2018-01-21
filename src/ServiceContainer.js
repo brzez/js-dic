@@ -6,23 +6,19 @@ export type InjectCallback = {
   (...args: any[]): any
 };
 
-export type InjectSignature = {
-  (factory: InjectCallback, dependencies?: string[]): any;
-};
-
-export type Bootable = {
+export type Injectable = {
   factory: InjectCallback;
-  dependencies?: string[];
+  dependencies: string[];
 };
 
 export default class ServiceContainer extends Container {
 
-  constructor (bootables: {[string]: Bootable}) {
+  constructor (bootables: {[string]: Injectable}) {
     super();
 
     const boot = (alias: string) => {
       const bootable = bootables[alias];
-      const {dependencies}: Bootable = bootables[alias];
+      const {dependencies}: Injectable = bootables[alias];
       // 1. get unregistered deps
       const notBooted = (dependencies || []).filter(dep => !this.exists(dep));
       // 2. boot them
@@ -39,7 +35,7 @@ export default class ServiceContainer extends Container {
     Object.keys(bootables).forEach(alias => boot(alias));
   }
 
-  inject ({factory, dependencies}: Bootable) {
+  inject ({factory, dependencies}: Injectable) {
     // resolve dependencies
     const resolvedServices = (dependencies||[]).map(alias => {
       if (this.exists(alias)) {
