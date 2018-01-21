@@ -13,29 +13,29 @@ export type Injectable = {
 
 export default class ServiceContainer extends Container {
 
-  constructor (bootables: {[string]: Injectable}) {
-    super();
-
-    const boot = (alias: string) => {
-      const bootable = bootables[alias];
-      const {dependencies}: Injectable = bootables[alias];
+  async boot (services: {[string]: Injectable}) {
+    const bootService = async (alias: string) => {
+      const bootable = services[alias];
+      const {dependencies}: Injectable = services[alias];
       // 1. get unregistered deps
-      const notBooted = (dependencies || []).filter(dep => !this.exists(dep));
+      const notBooted = dependencies.filter(dep => !this.exists(dep));
       // 2. boot them
-      notBooted.forEach(alias => boot(alias));
+      notBooted.forEach(alias => bootService(alias));
       // 3. boot this service
       if (this.exists(alias)) {
         return
       }
-      const instance = this.inject(bootable);
+      const instance = await this.inject(bootable);
       // 4. register it
       this.items[alias] = instance;
     }
 
-    Object.keys(bootables).forEach(alias => boot(alias));
+    for (const alias in services) {
+      await bootService(alias);
+    }
   }
 
-  inject ({factory, dependencies}: Injectable) {
+  async inject ({factory, dependencies}: Injectable) {
     // resolve dependencies
     const resolvedServices = (dependencies||[]).map(alias => {
       if (this.exists(alias)) {
@@ -44,6 +44,6 @@ export default class ServiceContainer extends Container {
       throw new Error(`Service [${alias}] is not registered`); 
     })
 
-    return factory.apply(undefined, resolvedServices);
+    return await factory.apply(undefined, resolvedServices);
   }
 }
