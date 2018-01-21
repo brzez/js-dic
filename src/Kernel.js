@@ -5,7 +5,7 @@ import ServiceContainer from './ServiceContainer'
 
 type ServiceDefinition = InjectCallback|Injectable;
 
-type ServiceRegistry = {
+export type ServiceRegistry = {
   [alias: string]: ServiceDefinition;
 };
 
