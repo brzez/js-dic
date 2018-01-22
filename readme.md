@@ -3,7 +3,7 @@
 
 Usage:
 
-```javascript
+```js
 import boot from 'dic'
 
 boot({

@@ -6,7 +6,7 @@ import {expect} from 'chai'
 import assertRejected from './assertRejected'
 import ServiceContainer from '../src/ServiceContainer'
 
-const service = (factory, dependencies = []) => ({factory, dependencies});
+const service = (factory, dependencies = [], tags = []) => ({factory, dependencies, tags});
 
 describe('ServiceContainer', () => {
   describe('boot', () => {
@@ -34,6 +34,29 @@ describe('ServiceContainer', () => {
       });
 
       expect(error).to.be.instanceof(Error);
+    })
+    // todo:
+    it('throws on non-existent dependency');
+
+    it('supports tags on bootable', async () => {
+      const container = new ServiceContainer();
+      // todo: support objects
+      // 'dep name' -> shorthand for {dependency: 'dep name'}
+      // {tag: 'tag name'}
+      // tags should be passed in as []
+      // should default to empty []
+      
+      await container.boot({
+        a: service((middlewares) => middlewares, [{tag: 'middleware'}]),
+        config: service(() => ({foo: 'bar'})),
+        middleware_a: service(() => 'middleware_a', ['config'], ['middleware']), 
+        middleware_b: service(() => 'middleware_b', ['config'], ['middleware']), 
+        middleware_c: service(() => 'middleware_c', ['config'], ['middleware']),
+      })
+
+      expect(container.get('a')).to.include('middleware_a')
+      expect(container.get('a')).to.include('middleware_b')
+      expect(container.get('a')).to.include('middleware_c')
     })
   })
 
