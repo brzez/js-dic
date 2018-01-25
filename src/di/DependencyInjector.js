@@ -1,43 +1,25 @@
 // @flow
 import Service from './Service'
 import type {Dependency} from './Dependency'
+import ServiceRepository from './ServiceRepository'
 
 export default class DependencyInjector {
-  services: Service[];
+  services: ServiceRepository;
 
   constructor (services: Service[]) {
-    this.services = services;
+    this.services = new ServiceRepository(services);
   }
 
   async boot () {
     // loop all services
     // inject each
-    await Promise.all(this.services.map(service => this.inject(service)));
+    await Promise.all(this.services.all().map(service => this.inject(service)));
     // return booted services
     return this.services;
   }
 
-  // todo: move find* to repo
-
-  findTags (name: string): Service[] {
-    return this.services.filter((service) => service.tags.includes(name));
-  }
-
-  // todo: rename service -> alias in Dependency
-  findAlias (alias: string): Service[] {
-    const match = this.services.filter((service) => service.name === alias);
-    if (match.length === 0) {
-      throw new Error(`Service ${alias} not found`);
-    }
-    return match;
-  }
-
-  findDependency ({type, name}: Dependency): Service[] {
-    return type === 'service' ? this.findAlias(name) : this.findTags(name);
-  }
-
   async resolveDependency (dependency: Dependency) {
-    const services = this.findDependency(dependency);
+    const services = this.services.findDependency(dependency);
     // ensure deps are booted
     await Promise.all(services.map(s => this.inject(s)));
     // get value for each service
