@@ -91,7 +91,14 @@ export default class ServiceContainer{
     }
 
     const values = matching.map(m => m.value);
+    
+    if (type === 'service') {
+      if (values.length === 0) {
+        throw new Error(`Service ${name} not found.`);
+      }
+      return values.shift();
+    }
 
-    return type === 'service' ? values.shift() : values;
+    return values; 
   }
 }
