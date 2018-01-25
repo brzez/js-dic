@@ -29,34 +29,4 @@ export default class ServiceContainer{
       .filter(service => service.tags.includes(name))
       .map(s => s.value);
   }
-
-  async resolveDependency ({type, name}: Dependency) {
-    const matching = this.services.filter(service => {
-      if (type === 'service') {
-        return service.name === name;
-      }
-
-      if (type === 'tag') {
-        return service.tags.includes(name);
-      }
-
-      return false;
-    });
-
-    for (const service of matching) {
-      // ensure booted
-      await service.boot(this);
-    }
-
-    const values = matching.map(m => m.value);
-    
-    if (type === 'service') {
-      if (values.length === 0) {
-        throw new Error(`Service ${name} not found.`);
-      }
-      return values.shift();
-    }
-
-    return values; 
-  }
 }
