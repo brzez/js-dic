@@ -71,6 +71,16 @@ describe('ServiceContainer', () => {
 
       expect(error).to.be.instanceof(Error);
     });
-    it('throws on circular dependency');
+    it('throws on circular dependency', async () => {
+      const container = new ServiceContainer();
+      
+      const error = await assertRejected(async () => await container.boot([
+        service('a', () => 1, ['b']),
+        service('b', () => 1, ['a']),
+      ]))
+
+      expect(error).to.be.instanceof(Error);
+
+    });
   })
 })
