@@ -15,13 +15,13 @@ export default class DependencyInjector {
     // inject each
     await Promise.all(this.services.all().map(service => this.inject(service)));
     // return booted services
-    return this.services;
+    return this.services.all();
   }
 
-  async resolveDependency (dependency: Dependency) {
+  async resolveDependency (dependency: Dependency, chain: string[]) {
     const services = this.services.findDependency(dependency);
     // ensure deps are booted
-    await Promise.all(services.map(s => this.inject(s)));
+    await Promise.all(services.map(s => this.inject(s, chain.slice())));
     // get value for each service
     const values = services.map(s => s.value);
 
@@ -29,22 +29,30 @@ export default class DependencyInjector {
     return dependency.type === 'service' ? values[0] : values;
   }
 
-  async resolveDependencies (dependencies: Dependency[]): Promise<any[]> {
+  async resolveDependencies (dependencies: Dependency[], chain: string[]): Promise<any[]> {
     let resolved = [];
 
     for (const dependency of dependencies) {
-      resolved.push(await this.resolveDependency(dependency));
+      resolved.push(await this.resolveDependency(dependency, chain));
     }
 
     return resolved;
   }
 
-  async inject (service: Service) {
+  async inject (service: Service, chain: string[] = []) {
     if (service.isReady()) {
       return
     }
 
-    const dependencies = await this.resolveDependencies(service.dependencies);
+    const {name} = service;
+
+    if (chain.includes(name)) {
+      throw new Error(`Circular dependency detected. Dependency chain: [${chain.join(',')}]`)
+    }
+
+    chain.push(name);
+
+    const dependencies = await this.resolveDependencies(service.dependencies, chain);
     const value = await service.factory.apply(null, dependencies);
 
     service.boot(value);

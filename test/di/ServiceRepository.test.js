@@ -4,15 +4,14 @@ import {describe, it} from 'mocha'
 import {expect} from 'chai'
 
 import ServiceRepository from '../../src/di/ServiceRepository'
-import Service from '../../src/di/Service'
+import createService from '../createService'
 
-const service = (name, tags = [], factory = () => {}, dependencies = []) => new Service(name, tags, factory, dependencies);
 const createRepo = () => {
   return new ServiceRepository([
-    service('foo', ['a']),
-    service('bar', ['a']),
-    service('baz', ['b']),
-    ])
+    createService('foo', ['a']),
+    createService('bar', ['a']),
+    createService('baz', ['b']),
+  ])
 }
 
 describe('ServiceRepository', () => {
