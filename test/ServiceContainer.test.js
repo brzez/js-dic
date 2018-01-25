@@ -71,6 +71,19 @@ describe('ServiceContainer', () => {
 
       expect(error).to.be.instanceof(Error);
     });
+    
+    it('does not throw on empty tags', async () => {
+      const container = new ServiceContainer();
+      
+      await container.boot([
+        service('foo', (a) => a, [dependency('a', 'tag')])
+      ])
+
+      const foo = container.services.get('foo').value;
+      expect(foo).to.be.an('array');
+      expect(foo).to.have.lengthOf(0);
+    });
+
     it('throws on circular dependency', async () => {
       const container = new ServiceContainer();
       
