@@ -5,7 +5,7 @@ import {expect} from 'chai'
 
 import assertRejected from './assertRejected'
 import ServiceContainer from '../src/ServiceContainer'
-import {Service} from '../src/ServiceContainer'
+import Service from '../src/ServiceContainer/Service'
 
 const service = (name: any, factory: any, dependencies: any = [], tags: any = []) => {
   return new Service(name, tags, factory, dependencies);

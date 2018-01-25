@@ -1,5 +1,4 @@
 // @flow
-import typeof Registry from './Registry'
 import type {Injectable, InjectCallback} from './ServiceContainer'
 import ServiceContainer from './ServiceContainer'
 
