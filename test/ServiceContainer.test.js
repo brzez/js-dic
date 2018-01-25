@@ -5,35 +5,33 @@ import {expect} from 'chai'
 
 import assertRejected from './assertRejected'
 import ServiceContainer from '../src/ServiceContainer'
+import {Service} from '../src/ServiceContainer'
 
-const service = (factory, dependencies = [], tags = []) => ({factory, dependencies, tags});
+const service = (name: any, factory: any, dependencies: any = [], tags: any = []) => {
+  return new Service(name, tags, factory, dependencies);
+}
+
+const dependency = (name: string, type: string = 'service') => {
+  return ({name, type});
+}
 
 describe('ServiceContainer', () => {
   describe('boot', () => {
     it('resolves dependencies in correct order', async () => {
       const container = new ServiceContainer();
 
-      await container.boot({
-        a: service((b, c) => `a ${b} ${c}`,['b', 'c']),
-        b: service((c) => `b ${c}`, ['c']),
-        c: service(() => `c`),
-      })
+      await container.boot([
+        service('foobarbaz', (foo, bar, baz) => [foo, bar, baz].join('/'), [
+          dependency('foo'),
+          dependency('bar'),
+          dependency('baz')
+        ]),
+        service('foo', () => 'foo'),
+        service('bar', () => 'bar'),
+        service('baz', () => 'baz'),
+      ])
 
-      expect(container.get('a')).to.be.equal('a b c c');
-      expect(container.get('b')).to.be.equal('b c');
-      expect(container.get('c')).to.be.equal('c');
-    })
-    it('fails on circular dependency', async () => {
-      const container = new ServiceContainer();
-
-      const error = await assertRejected(() => {
-        return container.boot({
-          a: service((b, c) => 1,['b']),
-          b: service((c) => 2, ['a']),
-        })
-      });
-
-      expect(error).to.be.instanceof(Error);
+      expect(container.services.get('foobarbaz').value).to.be.equal('foo/bar/baz');
     })
     // todo:
     it('throws on non-existent dependency');

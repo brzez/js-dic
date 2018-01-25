@@ -2,63 +2,86 @@
 import typeof Registry from './Registry'
 import Container from './Container'
 
-export type InjectCallback = {
+type ServiceFactory = {
   (...args: any[]): any
 };
 
-export type Injectable = {
-  factory: InjectCallback;
-  dependencies: string[];
+type Dependency = {
+  type: 'service'|'tag';
+  name: string;
 };
 
-export default class ServiceContainer extends Container {
+export class Service {
+  name: string;
+  tags: string[];
+
+  factory: ServiceFactory;
+  dependencies: Dependency[];
+
+  booting: bool = false;
+  ready: bool = false;
+
+  value: any;
+
+  constructor (name: string, tags: string[], factory: ServiceFactory, dependencies: Dependency[]) {
+    this.name = name;
+    this.tags = tags;
+    this.factory = factory;
+    this.dependencies = dependencies;
+  }
+
+  /**
+   * boot this service & dependencies
+   */
+  async boot (container: ServiceContainer) {
+    if (this.ready) {
+      return true;
+    }
+
+    this.booting = true;
+
+    const dependencyServices = this.dependencies.map(d => container.resolveDependency(d));
+    // ensure dependencies are booted
+    for (const dependency of dependencyServices) {
+      await dependency.boot(container);
+    }
+    this.value = this.factory.apply(null, dependencyServices.map(s => s.value));
+
+    this.ready = true;
+    this.booting = false;
+  }
+}
+
+export default class ServiceContainer{
+  services: Container<Service>;
+
   constructor () {
-    super();
+    this.services = new Container();
   }
 
-  async boot (services: {[string]: Injectable}) {
-    const dependencyStack = {};
-
-    const bootService = async (alias: string) => {
-      dependencyStack[alias] = true;
-
-      const bootable = services[alias];
-      const {dependencies}: Injectable = services[alias];
-      // 1. get unregistered deps
-      const notBooted = dependencies.filter(dep => !this.exists(dep));
-      // 2. boot them
-      for (let dependency of notBooted) {
-        if (dependency in dependencyStack) {
-          throw new Error(`Circular dependency detected (resolving ${dependency} from ${alias})`)
-        }
-
-        await bootService(dependency);
-        
-        delete dependencyStack[dependency];
-      }
-      // 3. boot this service
-      if (this.exists(alias)) {
-        return
-      }
-      const instance = await this.inject(bootable);
-      // 4. register it
-      this.items[alias] = instance;
-    }
-
-    for (const alias in services) {
-      await bootService(alias);
-    }
+  async boot (services: Service[]) {
+    // set services
+    services.forEach(service => this.services.set(service.name, service));
+    // resolve boot order
+    //  [throw if cicrular dependency]
+    await Promise.all(services.map(s => s.boot(this)));
+    
+    // boot according to boot order
   }
 
-  async inject ({factory, dependencies}: Injectable) {
-    // resolve dependencies
-    const resolvedServices = (dependencies||[]).map(alias => {
-      if (this.exists(alias)) {
-        return this.get(alias);
+  resolveDependency ({type, name}: Dependency): Service {
+    const service = this.services.all().filter(service => {
+      if (type === 'service') {
+        return service.name === name;
       }
-      throw new Error(`Service [${alias}] is not registered`); 
-    })
 
-    return await factory.apply(undefined, resolvedServices);
+      if (type === 'tag') {
+        return service.tags.includes(name);
+      }
+
+      return false;
+    }).shift();
+
+    return service;
   }
 }
