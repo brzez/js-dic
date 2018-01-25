@@ -40,12 +40,13 @@ export class Service {
 
     this.booting = true;
 
-    const dependencyServices = this.dependencies.map(d => container.resolveDependency(d));
-    // ensure dependencies are booted
-    for (const dependency of dependencyServices) {
-      await dependency.boot(container);
+    const dependencyServices = [];
+
+    for (const dependency of this.dependencies) {
+      dependencyServices.push(await container.resolveDependency(dependency));
     }
-    this.value = this.factory.apply(null, dependencyServices.map(s => s.value));
+
+    this.value = this.factory.apply(null, dependencyServices);
 
     this.ready = true;
     this.booting = false;
@@ -69,8 +70,8 @@ export default class ServiceContainer{
     // boot according to boot order
   }
 
-  resolveDependency ({type, name}: Dependency): Service {
-    const service = this.services.all().filter(service => {
+  async resolveDependency ({type, name}: Dependency) {
+    const matching = this.services.all().filter(service => {
       if (type === 'service') {
         return service.name === name;
       }
@@ -80,8 +81,15 @@ export default class ServiceContainer{
       }
 
       return false;
-    }).shift();
+    });
 
-    return service;
+    for (const service of matching) {
+      // ensure booted
+      await service.boot(this);
+    }
+
+    const values = matching.map(m => m.value);
+
+    return type === 'service' ? values.shift() : values;
   }
 }

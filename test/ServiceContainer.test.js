@@ -32,68 +32,37 @@ describe('ServiceContainer', () => {
       ])
 
       expect(container.services.get('foobarbaz').value).to.be.equal('foo/bar/baz');
-    })
-    // todo:
+    });
+
+    it('resolves tagged services', async () => {
+      const container = new ServiceContainer();
+
+      await container.boot([
+        service('foobarbaz', (group_a, group_b) => {
+          expect(group_a).to.be.an('array');
+          expect(group_a).to.have.lengthOf(2);
+
+          expect(group_b).to.be.an('array');
+          expect(group_b).to.have.lengthOf(1);
+
+          return [group_a.join('/'), group_b.join('/')]
+        }, [
+          dependency('group_a', 'tag'),
+          dependency('group_b', 'tag')
+        ]),
+        service('foo', () => 'foo', [], ['group_a']),
+        service('bar', () => 'bar', [], ['group_a']),
+        service('baz', () => 'baz', [], ['group_b']),
+      ])
+
+      const foobarbaz = container.services.get('foobarbaz').value;
+
+      expect(foobarbaz).to.be.an('array');
+      expect(foobarbaz[0]).to.be.equal('foo/bar');
+      expect(foobarbaz[1]).to.be.equal('baz');
+    });
+
     it('throws on non-existent dependency');
-
-    it('supports tags on bootable', async () => {
-      const container = new ServiceContainer();
-      // todo: support objects
-      // 'dep name' -> shorthand for {dependency: 'dep name'}
-      // {tag: 'tag name'}
-      // tags should be passed in as []
-      // should default to empty []
-      
-      await container.boot({
-        a: service((middlewares) => middlewares, [{tag: 'middleware'}]),
-        config: service(() => ({foo: 'bar'})),
-        middleware_a: service(() => 'middleware_a', ['config'], ['middleware']), 
-        middleware_b: service(() => 'middleware_b', ['config'], ['middleware']), 
-        middleware_c: service(() => 'middleware_c', ['config'], ['middleware']),
-      })
-
-      expect(container.get('a')).to.include('middleware_a')
-      expect(container.get('a')).to.include('middleware_b')
-      expect(container.get('a')).to.include('middleware_c')
-    })
-  })
-
-  describe('inject', () => {
-    it('should call the method with injected services', async () => {
-      const container = new ServiceContainer();
-
-      await container.boot({
-        foo: service(() => 'bar'),
-        baz: service(() => 'bazz'),
-      })
-
-      let called = false;
-
-      container.inject({
-        dependencies:['foo', 'baz'], 
-        factory: (foo, baz) => {
-          called = true;
-          expect(foo).to.be.equal('bar')
-          expect(baz).to.be.equal('bazz')
-        }
-      });
-
-      expect(called).to.be.true;
-    })
-    it('should throw on invalid service', () => {
-      const container = new ServiceContainer();
-
-      let called = false;
-
-      const throwingfn = () => container.inject({
-        dependencies: ['foo', 'baz'],
-        factory: (foo, baz) => {
-          called = true;
-        }
-      });
-
-      expect(throwingfn).to.throw;
-      expect(called).to.be.false;
-    })
+    it('throws on circular dependency');
   })
 })
