@@ -73,7 +73,15 @@ export default class ServiceContainer{
   }
 
   service (name: string): any {
-    
+    const filtered = this.services.all().filter(service => service.name === name);
+    if (filtered.length === 0) {
+      throw new Error(`Service ${name} not found`);
+    }
+    return filtered.shift().value;
+  }
+
+  tags (name: string): any[] {
+    return this.services.all().filter(service => service.tags.includes(name)).map(s => s.value);
   }
 
   async resolveDependency ({type, name}: Dependency) {

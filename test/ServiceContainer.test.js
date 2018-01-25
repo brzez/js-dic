@@ -18,12 +18,41 @@ const dependency = (name: string, type: string = 'service') => {
 describe('ServiceContainer', () => {
   describe('getters', () => {
     describe('service', () => {
-      it('gets a (single) service by name');
-      it('throws when service doesnt exist');
+      it('gets a (single) service by name', async () => {
+        const c = new ServiceContainer();
+        await c.boot([
+          service('a', () => 222)
+        ]);
+
+        expect(c.service('a')).to.be.equal(222);
+      });
+      it('throws when service doesnt exist', async () => {
+        const c = new ServiceContainer();
+        await c.boot([]);
+
+        expect(() => c.service('a')).to.throw(Error);
+      });
     })
     describe('tags', () => {
-      it('gets an array of tagged services');
-      it('returns empty array when no tags found');
+      it('gets an array of tagged services', async () => {
+        const c = new ServiceContainer();
+        await c.boot([
+          service('a', () => 222, [], ['foo']),
+          service('b', () => 333, [], ['foo'])
+        ])
+
+        expect(c.tags('foo')).to.be.an('array');
+        expect(c.tags('foo')).to.have.lengthOf(2);
+        expect(c.tags('foo')).to.include(222);
+        expect(c.tags('foo')).to.include(333);
+      });
+      it('returns empty array when no tags found', async () => {
+        const c = new ServiceContainer();
+        await c.boot([]);
+
+        expect(c.tags('foo')).to.be.an('array');
+        expect(c.tags('foo')).to.have.lengthOf(0);
+      });
     })
   })
 
