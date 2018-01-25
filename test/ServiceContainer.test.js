@@ -62,7 +62,15 @@ describe('ServiceContainer', () => {
       expect(foobarbaz[1]).to.be.equal('baz');
     });
 
-    it('throws on non-existent dependency');
+    it('throws on non-existent dependency', async () => {
+      const container = new ServiceContainer();
+      
+      const error = await assertRejected(async () => await container.boot([
+        service('foo', () => 1, ['non existent dependency'])
+      ]))
+
+      expect(error).to.be.instanceof(Error);
+    });
     it('throws on circular dependency');
   })
 })
