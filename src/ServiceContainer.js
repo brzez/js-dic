@@ -37,6 +37,11 @@ export class Service {
     if (this.ready) {
       return true;
     }
+    
+    if (this.booting) {
+      // circular dependency
+      throw new Error(`Circular dependency detected in service ${this.name}`);
+    }
 
     this.booting = true;
 
@@ -63,11 +68,8 @@ export default class ServiceContainer{
   async boot (services: Service[]) {
     // set services
     services.forEach(service => this.services.set(service.name, service));
-    // resolve boot order
-    //  [throw if cicrular dependency]
+
     await Promise.all(services.map(s => s.boot(this)));
-    
-    // boot according to boot order
   }
 
   async resolveDependency ({type, name}: Dependency) {

@@ -66,7 +66,7 @@ describe('ServiceContainer', () => {
       const container = new ServiceContainer();
       
       const error = await assertRejected(async () => await container.boot([
-        service('foo', () => 1, ['non existent dependency'])
+        service('foo', () => 1, dependency('non existent dependency'))
       ]))
 
       expect(error).to.be.instanceof(Error);
@@ -75,8 +75,8 @@ describe('ServiceContainer', () => {
       const container = new ServiceContainer();
       
       const error = await assertRejected(async () => await container.boot([
-        service('a', () => 1, ['b']),
-        service('b', () => 1, ['a']),
+        service('a', () => 1, dependency('b')),
+        service('b', () => 1, dependency('a')),
       ]))
 
       expect(error).to.be.instanceof(Error);
