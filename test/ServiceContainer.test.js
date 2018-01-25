@@ -71,7 +71,7 @@ describe('ServiceContainer', () => {
         service('baz', () => 'baz'),
       ])
 
-      expect(container.services.get('foobarbaz').value).to.be.equal('foo/bar/baz');
+      expect(container.service('foobarbaz')).to.be.equal('foo/bar/baz');
     });
 
     it('resolves tagged services', async () => {
@@ -95,7 +95,7 @@ describe('ServiceContainer', () => {
         service('baz', () => 'baz', [], ['group_b']),
       ])
 
-      const foobarbaz = container.services.get('foobarbaz').value;
+      const foobarbaz = container.service('foobarbaz');
 
       expect(foobarbaz).to.be.an('array');
       expect(foobarbaz[0]).to.be.equal('foo/bar');
@@ -119,7 +119,7 @@ describe('ServiceContainer', () => {
         service('foo', (a) => a, [dependency('a', 'tag')])
       ])
 
-      const foo = container.services.get('foo').value;
+      const foo = container.service('foo');
       expect(foo).to.be.an('array');
       expect(foo).to.have.lengthOf(0);
     });

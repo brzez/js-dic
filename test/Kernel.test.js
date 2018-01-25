@@ -5,8 +5,6 @@ import {expect} from 'chai'
 import assertRejected from './assertRejected'
 
 import Kernel from '../src/Kernel'
-import Container from '../src/Container'
-
 
 describe('Kernel', () => {
   it('calls the provider functions', async () => {
@@ -32,14 +30,5 @@ describe('Kernel', () => {
     await kernel.boot();
     
     await assertRejected(() => kernel.boot());
-  })
-
-
-  it('should return Container instance', async () => {
-    const kernel = new Kernel({});
-
-    const container = await kernel.boot();
-
-    expect(container).to.be.instanceof(Container);
   })
 })
