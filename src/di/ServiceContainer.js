@@ -3,7 +3,7 @@ import Service from './Service'
 import type {Dependency} from './Dependency.js'
 
 
-export default class ServiceContainer{
+export default class ServiceContainer {
   services: Service[];
 
   constructor () {
