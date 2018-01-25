@@ -1,32 +1,24 @@
 // @flow
 import Service from './Service'
 import type {Dependency} from './Dependency.js'
-
+import DependencyInjector from './DependencyInjector'
+import ServiceRepository from './ServiceRepository'
 
 export default class ServiceContainer {
-  services: Service[];
-
-  constructor () {
-    this.services = [];
-  }
+  services: ServiceRepository;
 
   async boot (services: Service[]) {
-    // set services
-    services.forEach(service => this.services.push(service));
-    await Promise.all(services.map(s => s.boot(this)));
+    this.services = new ServiceRepository(services);
+    const di = new DependencyInjector(services);
+
+    return await di.boot();
   }
 
   service (name: string): any {
-    const filtered = this.services.filter(service => service.name === name);
-    if (filtered.length === 0) {
-      throw new Error(`Service ${name} not found`);
-    }
-    return filtered.shift().value;
+    return this.services.findAlias(name)[0].value;
   }
 
   tags (name: string): any[] {
-    return this.services
-      .filter(service => service.tags.includes(name))
-      .map(s => s.value);
+    return this.services.findTags(name).map(s => s.value);
   }
 }
