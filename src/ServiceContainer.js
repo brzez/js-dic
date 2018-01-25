@@ -72,6 +72,10 @@ export default class ServiceContainer{
     await Promise.all(services.map(s => s.boot(this)));
   }
 
+  service (name: string): any {
+    
+  }
+
   async resolveDependency ({type, name}: Dependency) {
     const matching = this.services.all().filter(service => {
       if (type === 'service') {

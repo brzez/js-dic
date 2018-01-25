@@ -16,6 +16,17 @@ const dependency = (name: string, type: string = 'service') => {
 }
 
 describe('ServiceContainer', () => {
+  describe('getters', () => {
+    describe('service', () => {
+      it('gets a (single) service by name');
+      it('throws when service doesnt exist');
+    })
+    describe('tags', () => {
+      it('gets an array of tagged services');
+      it('returns empty array when no tags found');
+    })
+  })
+
   describe('boot', () => {
     it('resolves dependencies in correct order', async () => {
       const container = new ServiceContainer();
