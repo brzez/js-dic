@@ -30,12 +30,17 @@ describe('Kernel', () => {
 
       expect(s).to.be.instanceof(Service);
       expect(s.name).to.be.equal('foo');
+      expect(s.dependencies).to.be.an('array');
+      expect(s.tags).to.be.an('array');
     })
     it('normalizes single service definition', async () => {
       const s = kernel.normalizeService('foo', () => 123);
 
       expect(s).to.be.instanceof(Service);
       expect(s.name).to.be.equal('foo');
+      expect(s.dependencies).to.be.an('array');
+      expect(s.tags).to.be.an('array');
+      expect(s.factory()).to.be.equal(123);
     })
   })
 });
