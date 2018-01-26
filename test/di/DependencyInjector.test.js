@@ -31,7 +31,7 @@ describe('DependencyInjector', () => {
         createService('b', [], () => 1, [{type: 'service', name: 'a'}]),
       ])
 
-      assertRejected(async () => await di.boot())
+      await assertRejected(async () => await di.boot())
     });
   })
 })

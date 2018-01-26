@@ -1,49 +1,40 @@
 // @flow
-import type {Injectable, InjectCallback} from './ServiceContainer'
-import ServiceContainer from './ServiceContainer'
+import Service from './di/Service'
+import type {ServiceFactory} from './di/ServiceFactory'
+import type {Dependency} from './di/Dependency'
+import ServiceContainer from './di/ServiceContainer'
 
-type ServiceDefinition = InjectCallback|Injectable;
+type ServiceDefinition = {
+  tags?: string[];
+  factory: ServiceFactory;
+  dependencies?: Dependency[]|string[];
+};
 
-export type ServiceRegistry = {
-  [alias: string]: ServiceDefinition;
+type ServiceDefinitions = {
+  [name: string]: ServiceDefinition;
 };
 
 export default class Kernel {
-  booted: bool = false;
-  services: ServiceRegistry;
+  services: ServiceDefinitions;
+  booted: boolean = false;
 
-  constructor (services: ServiceRegistry) {
+  constructor (services: ServiceDefinitions) {
     this.services = services;
   }
 
-  normalizeInjectable (service: ServiceDefinition) {
-    if (typeof service === 'function') {
-      return {factory: service, dependencies: []};
-    }
-    return service;
+  normalizeService (name: string, def: ServiceDefinition): Service {
+
   }
 
-  createServiceContainer (): ServiceContainer {
-    return new ServiceContainer();
+  normalizeServices (): Service[] {
+    return [];
   }
 
-  async boot () {
-    if (this.booted) {
-      throw new Error('Kernel already booted');
-    }
-    
-    this.booted = true;
+  async boot (): Promise<ServiceContainer> {
+    const container = new ServiceContainer();
+    const normalized = this.normalizeServices();
 
-    const normalized = {};
-
-    Object.keys(this.services).forEach(alias => {
-      normalized[alias] = this.normalizeInjectable(this.services[alias]);
-    });
-
-    const container = this.createServiceContainer();
-
-    await container.boot(normalized);
-
+    container.boot(normalized);
     return container;
   }
 }

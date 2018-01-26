@@ -6,7 +6,7 @@ import ServiceRepository from './ServiceRepository'
 
 export default class ServiceContainer {
   services: ServiceRepository;
-
+  // todo: move services to ctor
   async boot (services: Service[]) {
     this.services = new ServiceRepository(services);
     const di = new DependencyInjector(services);
