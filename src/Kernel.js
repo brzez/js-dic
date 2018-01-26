@@ -49,10 +49,14 @@ export default class Kernel {
   }
 
   async boot (): Promise<ServiceContainer> {
+    if (this.booted) {
+      throw new Error('Kernel already booted');
+    }
     const container = new ServiceContainer();
     const normalized = this.normalizeServices();
 
-    container.boot(normalized);
+    await container.boot(normalized);
+    this.booted = true;
     return container;
   }
 }
