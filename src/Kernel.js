@@ -4,15 +4,15 @@ import type {ServiceFactory} from './di/ServiceFactory'
 import type {Dependency} from './di/Dependency'
 import ServiceContainer from './di/ServiceContainer'
 
-type ServiceObjectDefinition = {
+export type ServiceObjectDefinition = {
   tags?: string[];
   factory: ServiceFactory;
   dependencies?: Array<Dependency|string>;
 };
 
-type ServiceDefinition = ServiceObjectDefinition|ServiceFactory;
+export type ServiceDefinition = ServiceObjectDefinition|ServiceFactory;
 
-type ServiceDefinitions = {
+export type ServiceDefinitions = {
   [name: string]: ServiceDefinition;
 };
 
@@ -40,7 +40,7 @@ export default class Kernel {
       return new Service(name, [], def, []);
     }
 
-    return this.createServiceFromObjectDef(name, def);
+    return this.createServiceFromObjectDef(name, (def: any));
   }
 
   normalizeServices (): Service[] {
