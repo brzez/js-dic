@@ -6,7 +6,7 @@
   "scripts": {
     "flow": "flow",
     "test": "mocha --require babel-core/register --require babel-polyfill \"test/**/*.js\"",
-    "build": "flow && babel src -d dist"
+    "build": "flow && babel src -d dist && flow-copy-source src dist"
   },
   "author": "pawel brzezinski",
   "license": "ISC",
@@ -19,6 +19,7 @@
     "babel-preset-stage-2": "^6.24.1",
     "chai": "^4.1.2",
     "flow-bin": "^0.63.1",
+    "flow-copy-source": "^1.2.2",
     "mocha": "^5.0.0"
   }
 }

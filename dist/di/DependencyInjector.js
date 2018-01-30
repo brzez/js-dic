@@ -31,26 +31,78 @@ var DependencyInjector = function () {
     key: 'boot',
     value: function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var _this = this;
+        var _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, service;
 
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                _context.next = 2;
-                return Promise.all(this.services.all().map(function (service) {
-                  return _this.inject(service);
-                }));
+                // loop all services
+                // inject each
+                _iteratorNormalCompletion = true;
+                _didIteratorError = false;
+                _iteratorError = undefined;
+                _context.prev = 3;
+                _iterator = this.services.all()[Symbol.iterator]();
 
-              case 2:
+              case 5:
+                if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+                  _context.next = 12;
+                  break;
+                }
+
+                service = _step.value;
+                _context.next = 9;
+                return this.inject(service);
+
+              case 9:
+                _iteratorNormalCompletion = true;
+                _context.next = 5;
+                break;
+
+              case 12:
+                _context.next = 18;
+                break;
+
+              case 14:
+                _context.prev = 14;
+                _context.t0 = _context['catch'](3);
+                _didIteratorError = true;
+                _iteratorError = _context.t0;
+
+              case 18:
+                _context.prev = 18;
+                _context.prev = 19;
+
+                if (!_iteratorNormalCompletion && _iterator.return) {
+                  _iterator.return();
+                }
+
+              case 21:
+                _context.prev = 21;
+
+                if (!_didIteratorError) {
+                  _context.next = 24;
+                  break;
+                }
+
+                throw _iteratorError;
+
+              case 24:
+                return _context.finish(21);
+
+              case 25:
+                return _context.finish(18);
+
+              case 26:
                 return _context.abrupt('return', this.services.all());
 
-              case 3:
+              case 27:
               case 'end':
                 return _context.stop();
             }
           }
-        }, _callee, this);
+        }, _callee, this, [[3, 14, 18, 26], [19,, 21, 25]]);
       }));
 
       function boot() {
@@ -63,7 +115,7 @@ var DependencyInjector = function () {
     key: 'resolveDependency',
     value: function () {
       var _ref2 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee2(dependency, chain) {
-        var _this2 = this;
+        var _this = this;
 
         var services, values;
         return regeneratorRuntime.wrap(function _callee2$(_context2) {
@@ -75,7 +127,7 @@ var DependencyInjector = function () {
 
                 _context2.next = 3;
                 return Promise.all(services.map(function (s) {
-                  return _this2.inject(s, chain.slice());
+                  return _this.inject(s, chain.slice());
                 }));
 
               case 3:
@@ -106,26 +158,26 @@ var DependencyInjector = function () {
     key: 'resolveDependencies',
     value: function () {
       var _ref3 = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee3(dependencies, chain) {
-        var resolved, _iteratorNormalCompletion, _didIteratorError, _iteratorError, _iterator, _step, dependency;
+        var resolved, _iteratorNormalCompletion2, _didIteratorError2, _iteratorError2, _iterator2, _step2, dependency;
 
         return regeneratorRuntime.wrap(function _callee3$(_context3) {
           while (1) {
             switch (_context3.prev = _context3.next) {
               case 0:
                 resolved = [];
-                _iteratorNormalCompletion = true;
-                _didIteratorError = false;
-                _iteratorError = undefined;
+                _iteratorNormalCompletion2 = true;
+                _didIteratorError2 = false;
+                _iteratorError2 = undefined;
                 _context3.prev = 4;
-                _iterator = dependencies[Symbol.iterator]();
+                _iterator2 = dependencies[Symbol.iterator]();
 
               case 6:
-                if (_iteratorNormalCompletion = (_step = _iterator.next()).done) {
+                if (_iteratorNormalCompletion2 = (_step2 = _iterator2.next()).done) {
                   _context3.next = 16;
                   break;
                 }
 
-                dependency = _step.value;
+                dependency = _step2.value;
                 _context3.t0 = resolved;
                 _context3.next = 11;
                 return this.resolveDependency(dependency, chain);
@@ -136,7 +188,7 @@ var DependencyInjector = function () {
                 _context3.t0.push.call(_context3.t0, _context3.t1);
 
               case 13:
-                _iteratorNormalCompletion = true;
+                _iteratorNormalCompletion2 = true;
                 _context3.next = 6;
                 break;
 
@@ -147,26 +199,26 @@ var DependencyInjector = function () {
               case 18:
                 _context3.prev = 18;
                 _context3.t2 = _context3['catch'](4);
-                _didIteratorError = true;
-                _iteratorError = _context3.t2;
+                _didIteratorError2 = true;
+                _iteratorError2 = _context3.t2;
 
               case 22:
                 _context3.prev = 22;
                 _context3.prev = 23;
 
-                if (!_iteratorNormalCompletion && _iterator.return) {
-                  _iterator.return();
+                if (!_iteratorNormalCompletion2 && _iterator2.return) {
+                  _iterator2.return();
                 }
 
               case 25:
                 _context3.prev = 25;
 
-                if (!_didIteratorError) {
+                if (!_didIteratorError2) {
                   _context3.next = 28;
                   break;
                 }
 
-                throw _iteratorError;
+                throw _iteratorError2;
 
               case 28:
                 return _context3.finish(25);
