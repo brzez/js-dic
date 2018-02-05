@@ -21,4 +21,8 @@ export default class ServiceContainer {
   tags (name: string): any[] {
     return this.services.findTags(name).map(s => s.value);
   }
+
+  resolveDependency (dep: Dependency): any[] {
+    return this.services.findDependency(dep).map(s => s.value);
+  }
 }
