@@ -3,6 +3,9 @@ import Service from './di/Service'
 import type {ServiceFactory} from './di/ServiceFactory'
 import type {Dependency} from './di/Dependency'
 import ServiceContainer from './di/ServiceContainer'
+import normalizeDependencies from './normalizeDependencies'
+
+import createInject from './createInject'
 
 export type ServiceObjectDefinition = {
   tags?: string[];
@@ -19,20 +22,25 @@ export type ServiceDefinitions = {
 export default class Kernel {
   services: ServiceDefinitions;
   booted: boolean = false;
+  container: ServiceContainer;
 
-  constructor (services: ServiceDefinitions) {
+  constructor (services: ServiceDefinitions, appendInternals: boolean = true) {
     this.services = services;
+
+    if (appendInternals) {
+      this.appendInternals();
+    }
+  }
+
+  appendInternals () {
+    const internals = {
+      $inject: createInject(this)
+    };
+    Object.assign(this.services, internals);
   }
 
   createServiceFromObjectDef (name: string, def: ServiceObjectDefinition): Service {
-    let dependencies = def.dependencies || [];
-    dependencies = dependencies.map(dep => {
-      if (typeof dep === 'string') {
-        return {name: dep, type: 'service'}
-      }
-      return dep;
-    }) 
-    return new Service(name, def.tags || [], def.factory, dependencies);
+    return new Service(name, def.tags || [], def.factory, normalizeDependencies(def.dependencies));
   }
 
   normalizeService (name: string, def: ServiceDefinition): Service {
@@ -52,11 +60,11 @@ export default class Kernel {
     if (this.booted) {
       throw new Error('Kernel already booted');
     }
-    const container = new ServiceContainer();
+    this.container = new ServiceContainer();
     const normalized = this.normalizeServices();
 
-    await container.boot(normalized);
+    await this.container.boot(normalized);
     this.booted = true;
-    return container;
+    return this.container;
   }
 }

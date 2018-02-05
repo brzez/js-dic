@@ -74,6 +74,13 @@ var ServiceContainer = function () {
         return s.value;
       });
     }
+  }, {
+    key: 'resolveDependency',
+    value: function resolveDependency(dep) {
+      return this.services.findDependency(dep).map(function (s) {
+        return s.value;
+      });
+    }
   }]);
 
   return ServiceContainer;

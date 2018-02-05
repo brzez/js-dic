@@ -14,6 +14,14 @@ var _ServiceContainer = require('./di/ServiceContainer');
 
 var _ServiceContainer2 = _interopRequireDefault(_ServiceContainer);
 
+var _normalizeDependencies = require('./normalizeDependencies');
+
+var _normalizeDependencies2 = _interopRequireDefault(_normalizeDependencies);
+
+var _createInject = require('./createInject');
+
+var _createInject2 = _interopRequireDefault(_createInject);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -22,24 +30,31 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Kernel = function () {
   function Kernel(services) {
+    var appendInternals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
     _classCallCheck(this, Kernel);
 
     this.booted = false;
 
     this.services = services;
+
+    if (appendInternals) {
+      this.appendInternals();
+    }
   }
 
   _createClass(Kernel, [{
+    key: 'appendInternals',
+    value: function appendInternals() {
+      var internals = {
+        $inject: (0, _createInject2.default)(this)
+      };
+      Object.assign(this.services, internals);
+    }
+  }, {
     key: 'createServiceFromObjectDef',
     value: function createServiceFromObjectDef(name, def) {
-      var dependencies = def.dependencies || [];
-      dependencies = dependencies.map(function (dep) {
-        if (typeof dep === 'string') {
-          return { name: dep, type: 'service' };
-        }
-        return dep;
-      });
-      return new _Service2.default(name, def.tags || [], def.factory, dependencies);
+      return new _Service2.default(name, def.tags || [], def.factory, (0, _normalizeDependencies2.default)(def.dependencies));
     }
   }, {
     key: 'normalizeService',
@@ -63,7 +78,7 @@ var Kernel = function () {
     key: 'boot',
     value: function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var container, normalized;
+        var normalized;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
@@ -76,14 +91,14 @@ var Kernel = function () {
                 throw new Error('Kernel already booted');
 
               case 2:
-                container = new _ServiceContainer2.default();
+                this.container = new _ServiceContainer2.default();
                 normalized = this.normalizeServices();
                 _context.next = 6;
-                return container.boot(normalized);
+                return this.container.boot(normalized);
 
               case 6:
                 this.booted = true;
-                return _context.abrupt('return', container);
+                return _context.abrupt('return', this.container);
 
               case 8:
               case 'end':
