@@ -21,6 +21,7 @@ describe('Kernel', () => {
       expect(sc).to.be.instanceof(ServiceContainer)
     })
   })
+  
   describe('normalizeService', () => {
     const kernel = new Kernel({});
     it('normalizes single service definition', async () => {
@@ -41,6 +42,25 @@ describe('Kernel', () => {
       expect(s.dependencies).to.be.an('array');
       expect(s.tags).to.be.an('array');
       expect(s.factory()).to.be.equal(123);
+    })
+  })
+
+  describe('$inject', () => {
+    it('appends $inject method', async () => {
+      let inject = false;
+
+      const kernel = new Kernel({
+        foo: {
+          factory ($inject) {
+            inject = $inject;
+          },
+          dependencies: ['$inject']
+        }
+      });
+
+      await kernel.boot();
+
+      expect(inject).to.be.a('function');
     })
   })
 });
