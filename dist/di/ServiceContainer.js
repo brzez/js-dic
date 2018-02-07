@@ -77,9 +77,17 @@ var ServiceContainer = function () {
   }, {
     key: 'resolveDependency',
     value: function resolveDependency(dep) {
-      return this.services.findDependency(dep).map(function (s) {
-        return s.value;
-      });
+      var type = dep.type,
+          name = dep.name;
+
+      switch (type) {
+        case 'service':
+          return this.service(name);
+        case 'tag':
+          return this.tags(name);
+      }
+
+      throw new Error('[' + type + '] \'' + name + '\' could not be resolved');
     }
   }]);
 

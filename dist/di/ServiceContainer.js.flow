@@ -22,7 +22,15 @@ export default class ServiceContainer {
     return this.services.findTags(name).map(s => s.value);
   }
 
-  resolveDependency (dep: Dependency): any[] {
-    return this.services.findDependency(dep).map(s => s.value);
+  resolveDependency (dep: Dependency): any {
+    const {type, name} = dep;
+    switch (type) {
+      case 'service':
+        return this.service(name);
+      case 'tag':
+        return this.tags(name);
+    }
+
+    throw new Error(`[${type}] '${name}' could not be resolved`);
   }
 }
