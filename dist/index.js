@@ -4,6 +4,8 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
+require('babel-polyfill');
+
 var _Kernel = require('./Kernel');
 
 var _Kernel2 = _interopRequireDefault(_Kernel);

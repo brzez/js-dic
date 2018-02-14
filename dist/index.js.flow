@@ -1,4 +1,5 @@
 // @flow
+import 'babel-polyfill'
 import type {ServiceDefinitions} from './Kernel'
 import Kernel from './Kernel'
 
