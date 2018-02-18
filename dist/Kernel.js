@@ -22,6 +22,10 @@ var _createInject = require('./createInject');
 
 var _createInject2 = _interopRequireDefault(_createInject);
 
+var _createGet = require('./createGet');
+
+var _createGet2 = _interopRequireDefault(_createGet);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -47,7 +51,8 @@ var Kernel = function () {
     key: 'appendInternals',
     value: function appendInternals() {
       var internals = {
-        $inject: (0, _createInject2.default)(this)
+        $inject: (0, _createInject2.default)(this),
+        $get: (0, _createGet2.default)(this)
       };
       Object.assign(this.services, internals);
     }

@@ -6,6 +6,7 @@ import ServiceContainer from './di/ServiceContainer'
 import normalizeDependencies from './normalizeDependencies'
 
 import createInject from './createInject'
+import createGet from './createGet'
 
 export type ServiceObjectDefinition = {
   tags?: string[];
@@ -34,7 +35,8 @@ export default class Kernel {
 
   appendInternals () {
     const internals = {
-      $inject: createInject(this)
+      $inject: createInject(this),
+      $get: createGet(this),
     };
     Object.assign(this.services, internals);
   }

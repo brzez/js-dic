@@ -63,4 +63,22 @@ describe('Kernel', () => {
       expect(inject).to.be.a('function');
     })
   })
+  describe('$get', () => {
+    it('appends $get method', async () => {
+      let get = false;
+
+      const kernel = new Kernel({
+        foo: {
+          factory ($get) {
+            get = $get;
+          },
+          dependencies: ['$get']
+        }
+      });
+
+      await kernel.boot();
+
+      expect(get).to.be.a('function');
+    })
+  })
 });
