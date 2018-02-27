@@ -1,78 +1,33 @@
 # js dependency injection container
 
-## Basic usage:
+v2
+
+- prevents name collisions  
+  throws when many services have the same name
+
+- service name is optional  
+  some services might be required via tags only - name is not needed
+
+usage:
 
 ```js
-import boot from 'dic'
+import boot, {tag, service} from 'dic'
 
-boot({
-  // service definitions
-  config: () => {
-    return {
-      foo: 'bar'
-    }
-  },
-  app: {
-    factory: (config) => createApp(config),
-    dependencies: ['config'],
-  }
-})
-  .then((container) => {
-    // container ready
-    container.service('app').start();
-  })
-```
-
-## exports
-
-```js
-import boot from 'dic'
-import {serviceReference, tagReference} from 'dic'
-```
-
-- *boot*  
-  boot (services: ServiceDefinitions) => Promise<ServiceContainer>  
-  promises a booted ServiceContainer
-- *serviceReference*  
-  casts string to Dependency object (service). eg. `'foo' => '{name: 'foo', type: 'service'}'`
-- *tagReference*  
-  casts string to Dependency object (tag). eg. `'foo' => '{name: 'foo', type: 'tag'}'`
-  
-- ServiceDefinitions
-  object of `alias: ServiceDefinition`
-- ServiceDefinition = ServiceObjectDefinition|ServiceFactory
-- ServiceFactory `(...args: any[]): any`
-  simple service w/o dependencies
-- ServiceObjectDefinition
-  ```
+boot([
   {
-    factory: ServiceFactory;
-    tags?: string[];
-    dependencies?: Array<Dependency|string>;
+    name: 'service name', // optional
+    tags: 'foo', // optional, string|string[]
+    
+    factory: (dependency1, dependency2, some_tags) => {},
+    requires: [
+      service('dependency1'),
+      service('dependency2'),
+      tag('some_tags')
+    ] // optional, Dependency|Dependency[]
   }
-  ```
-  service w/ dependencies. Can also register tags.
-- dependencies `Array<Dependency|string>`
-  string is a shortcut for service dependency / reference
-  can be used to inject services or tags[]
-- tags
-  service can register itself as one or many tags
-  which can be later used via `tagReference(tagname: string)` in other service dependencies
-  
-## Injecting dependencies
+])
+.then(container => {
+  //
+})
 
-dependencies are injected in the order they are defined in ServiceObjectDefinition
-
-## Circular dependencies
-Circular dependencies are prevented via Error when booting
-
-## Internal dependencies
-These can be inserted into ServiceObjectDefinition in dependencies
-- $get `(dependency: Dependency|string)`
-  *throws if container is not booted*
-  resolves a Dependency
-- $inject `method: () => any, dependencies: ?Array<Dependency|string>, thisArg?: any`
-  *throws if container is not booted*
-  calls a method with resolved dependencies
-- $ready `(callback: (container: ServiceContainer): any)`
-  callback is fired after container is ready / booted
+```
