@@ -3,6 +3,22 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.tagReference = exports.serviceReference = undefined;
+
+var _Dependency = require('./di/Dependency');
+
+Object.defineProperty(exports, 'serviceReference', {
+  enumerable: true,
+  get: function get() {
+    return _Dependency.serviceReference;
+  }
+});
+Object.defineProperty(exports, 'tagReference', {
+  enumerable: true,
+  get: function get() {
+    return _Dependency.tagReference;
+  }
+});
 
 require('babel-polyfill');
 

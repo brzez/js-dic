@@ -26,6 +26,10 @@ var _createGet = require('./createGet');
 
 var _createGet2 = _interopRequireDefault(_createGet);
 
+var _createReady = require('./createReady');
+
+var _createReady2 = _interopRequireDefault(_createReady);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _asyncToGenerator(fn) { return function () { var gen = fn.apply(this, arguments); return new Promise(function (resolve, reject) { function step(key, arg) { try { var info = gen[key](arg); var value = info.value; } catch (error) { reject(error); return; } if (info.done) { resolve(value); } else { return Promise.resolve(value).then(function (value) { step("next", value); }, function (err) { step("throw", err); }); } } return step("next"); }); }; }
@@ -39,6 +43,7 @@ var Kernel = function () {
     _classCallCheck(this, Kernel);
 
     this.booted = false;
+    this.readyListeners = [];
 
     this.services = services;
 
@@ -52,7 +57,8 @@ var Kernel = function () {
     value: function appendInternals() {
       var internals = {
         $inject: (0, _createInject2.default)(this),
-        $get: (0, _createGet2.default)(this)
+        $get: (0, _createGet2.default)(this),
+        $ready: (0, _createReady2.default)(this)
       };
       Object.assign(this.services, internals);
     }
@@ -83,6 +89,8 @@ var Kernel = function () {
     key: 'boot',
     value: function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
+        var _this2 = this;
+
         var normalized;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
@@ -103,9 +111,12 @@ var Kernel = function () {
 
               case 6:
                 this.booted = true;
+                this.readyListeners.forEach(function (callback) {
+                  return callback(_this2.container);
+                });
                 return _context.abrupt('return', this.container);
 
-              case 8:
+              case 9:
               case 'end':
                 return _context.stop();
             }

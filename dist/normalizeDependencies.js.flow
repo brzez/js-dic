@@ -1,9 +1,10 @@
 // @flow
 import type {Dependency} from './di/Dependency'
+import {serviceReference} from "./di/Dependency";
 
 export function normalizeDependency (dependency: Dependency|string) {
   if (typeof dependency === 'string') {
-    return {name: dependency, type: 'service'}
+    return serviceReference(dependency);
   }
   return dependency;
 }

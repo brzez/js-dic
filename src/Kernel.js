@@ -7,6 +7,7 @@ import normalizeDependencies from './normalizeDependencies'
 
 import createInject from './createInject'
 import createGet from './createGet'
+import createReady from "./createReady";
 
 export type ServiceObjectDefinition = {
   tags?: string[];
@@ -20,10 +21,15 @@ export type ServiceDefinitions = {
   [name: string]: ServiceDefinition;
 };
 
+export type ReadyCallback = {
+  (container: ServiceContainer): any
+};
+
 export default class Kernel {
   services: ServiceDefinitions;
   booted: boolean = false;
   container: ServiceContainer;
+  readyListeners: Array<ReadyCallback> = [];
 
   constructor (services: ServiceDefinitions, appendInternals: boolean = true) {
     this.services = services;
@@ -37,6 +43,7 @@ export default class Kernel {
     const internals = {
       $inject: createInject(this),
       $get: createGet(this),
+      $ready: createReady(this),
     };
     Object.assign(this.services, internals);
   }
@@ -67,6 +74,7 @@ export default class Kernel {
 
     await this.container.boot(normalized);
     this.booted = true;
+    this.readyListeners.forEach(callback => callback(this.container));
     return this.container;
   }
 }

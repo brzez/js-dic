@@ -9,7 +9,8 @@ describe('createGet', () => {
   it('throws when kernel not booted', () => {
     const i = createGet(({booted: false}: any))()
     expect(() => i('a')).to.throw();
-  })
+  });
+
   it('injects a single service', () => {
     const i = createGet(({
       booted: true,
@@ -19,7 +20,7 @@ describe('createGet', () => {
           return 1
         }
       }
-    }: any))()
+    }: any))();
 
     expect(i('a')).to.be.equal(1);
   })

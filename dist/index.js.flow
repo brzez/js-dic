@@ -7,3 +7,5 @@ export default async function boot (services: ServiceDefinitions) {
   const kernel = new Kernel(services);
   return await kernel.boot();
 }
+
+export {serviceReference, tagReference} from './di/Dependency'
