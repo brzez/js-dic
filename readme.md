@@ -31,3 +31,14 @@ boot([
 })
 
 ```
+
+```js
+type Injectable = {
+  factory: ServiceFactory,
+  requires?: Dependency|Dependency[],
+};
+```
+
+builtin services
+- $inject - injects dependencies to a factory method *Injectable*
+- $ready
