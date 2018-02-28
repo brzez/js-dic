@@ -1,12 +1,7 @@
 // @flow
 
 import type {ServiceDefinition} from "./types/ServiceDefinition";
-
-export type ServiceMap = {
-  byName: {[string]: ServiceDefinition};
-  byTag: {[string]: ServiceDefinition[]};
-  anonymous: ServiceDefinition[];
-}
+import {ServiceMap} from "./ServiceMap";
 
 // todo: check types name => string, def.tags = string|string[] etc.
 export function mapByName (def: ServiceDefinition, store: {[string]: ServiceDefinition}): boolean {
@@ -57,5 +52,5 @@ export default function mapServices (defs: ServiceDefinition[]): ServiceMap {
     anonymous.push(def);
   });
 
-  return ({byName, byTag, anonymous})
+  return new ServiceMap(byName, byTag, anonymous);
 }
