@@ -5,6 +5,24 @@ import resolveBootOrder from "./resolveBootOrder";
 import mapServices from "./mapServices";
 import {ServiceRepository} from "./ServiceRepository";
 
+class DependencyInjector {
+  repository: ServiceRepository;
+  bootOrder: ServiceDefinition[];
+
+  constructor(services: ServiceDefinition[]) {
+    this.bootOrder = resolveBootOrder(services);
+    this.repository = mapServices(services);
+  }
+
+  async boot () {
+    for (const definition of this.bootOrder) {
+      const dependencies = definition.dependencies || [];
+      const resolved = dependencies.map(dep => this.repository.resolveDependency(dep).value);
+      definition.value = await definition.factory.apply(definition.factory, resolved);
+    }
+  }
+}
+
 export default class Kernel {
   services: ServiceDefinition[];
 
@@ -13,18 +31,9 @@ export default class Kernel {
   }
 
   async boot (): Promise<Container> {
-    // resolve boot order
-    const resolved = resolveBootOrder(this.services);
-    const map = mapServices(resolved);
-    // boot all services
-    resolved.forEach(def => {
-      this.bootServiceDefinition(def, map);
-    })
-    // create container w/ booted services
-  }
+    const di = new DependencyInjector(this.services);
+    await di.boot();
 
-  bootServiceDefinition(def: ServiceDefinition, map: ServiceRepository) {
-    const dependencies = def.dependencies || [];
-    const resolved = dependencies.map(dep => map.resolveDependency(dep));
+    return new Container()
   }
 }
