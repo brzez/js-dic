@@ -3,7 +3,7 @@
 import {describe, it} from 'mocha'
 import {expect} from 'chai'
 import resolveBootOrder from "../src/resolveBootOrder";
-import {service} from "../src/helpers";
+import {service, tag} from "../src/helpers";
 import mockService from "./mock/mockService";
 
 
@@ -30,7 +30,7 @@ describe('resolveBootOrder', () => {
       const c = mockService({name: 'c'});
 
       const result = resolveBootOrder([a, b, c]);
-      expect(result).to.have.members([c, b, a]);
+      expect(result).to.be.deep.equal([c, b, a]);
     });
 
     it('resolves islands', () => {
@@ -39,7 +39,16 @@ describe('resolveBootOrder', () => {
       const c = mockService({name: 'c'}, service('a'));
 
       const result = resolveBootOrder([a, b, c]);
-      expect(result).to.have.members([c, b, a]);
+      expect(result).to.be.deep.equal([b, a, c]);
+    });
+
+    it('resolves tags', () => {
+      const a = mockService({name: 'a'}, tag('b'));
+      const tag_b1 = mockService({tags: 'b'});
+      const tag_b2 = mockService({tags: 'b'});
+
+      const result = resolveBootOrder([tag_b2, a, tag_b1]);
+      expect(result).to.be.deep.equal([tag_b2, tag_b1, a]);
     })
   })
 });
