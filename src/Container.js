@@ -11,6 +11,6 @@ export default class Container {
   }
 
   get (dependency: Dependency) {
-    return this.repository.resolveDependency(dependency);
+    return this.repository.resolveDependency(dependency).value;
   }
 }
