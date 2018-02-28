@@ -3,9 +3,8 @@
 import type {ServiceDefinition} from "./types/ServiceDefinition";
 
 export type ServiceMap = {
-  // todo: rename services -> names (?)
-  services: {[string]: ServiceDefinition};
-  tags: {[string]: ServiceDefinition[]};
+  byName: {[string]: ServiceDefinition};
+  byTag: {[string]: ServiceDefinition[]};
   anonymous: ServiceDefinition[];
 }
 
@@ -47,16 +46,16 @@ export function mapByTags (def: ServiceDefinition, store: {[string]: ServiceDefi
 }
 
 export default function mapServices (defs: ServiceDefinition[]): ServiceMap {
-  const services: {[string]: ServiceDefinition} = {};
-  const tags: {[string]: ServiceDefinition[]} = {};
+  const byName: {[string]: ServiceDefinition} = {};
+  const byTag: {[string]: ServiceDefinition[]} = {};
   const anonymous: ServiceDefinition[] = [];
 
   defs.forEach(def => {
-    if (mapByName(def, services) || mapByTags(def, tags)) {
+    if (mapByName(def, byName) || mapByTags(def, byTag)) {
       return;
     }
     anonymous.push(def);
   });
 
-  return ({services, tags, anonymous})
+  return ({byName, byTag, anonymous})
 }

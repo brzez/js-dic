@@ -62,7 +62,7 @@ describe('mapServices', () => {
 
   it('resolves to proper object when no services provided', () => {
     const result = mapServices([]);
-    expect(result).to.have.keys('services', 'tags', 'anonymous');
+    expect(result).to.have.keys('byName', 'byTag', 'anonymous');
   });
 
   it('maps services via their registration type', () => {
@@ -82,13 +82,13 @@ describe('mapServices', () => {
       ...anon
     ]);
 
-    expect(result.services.service_foo).to.be.equal(service_foo);
-    expect(result.services.service_bar).to.be.equal(service_bar);
+    expect(result.byName.service_foo).to.be.equal(service_foo);
+    expect(result.byName.service_bar).to.be.equal(service_bar);
 
-    expect(result.tags.tag_a).to.be.an('array').that.includes(tag_a);
-    expect(result.tags.tag_a).to.be.an('array').that.includes(tag_a_2);
+    expect(result.byTag.tag_a).to.be.an('array').that.includes(tag_a);
+    expect(result.byTag.tag_a).to.be.an('array').that.includes(tag_a_2);
 
-    expect(result.tags.tag_b).to.be.an('array').that.includes(tag_b);
+    expect(result.byTag.tag_b).to.be.an('array').that.includes(tag_b);
 
     expect(result.anonymous).to.be.deep.equal(anon);
   })
