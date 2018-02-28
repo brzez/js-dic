@@ -15,6 +15,15 @@ describe('resolveBootOrder', () => {
       ])).to.throw();
     });
 
+    it('fails on circular dependency', () => {
+      const fail = () => resolveBootOrder([
+        mockService({name: 'a'}, service('b')),
+        mockService({name: 'b'}, service('c')),
+        mockService({name: 'c'}, service('a')),
+      ]);
+      expect(fail).to.throw();
+    });
+
     it('resolves dependencies in correct order', () => {
       const a = mockService({name: 'a'}, service('b'));
       const b = mockService({name: 'b'}, service('c'));

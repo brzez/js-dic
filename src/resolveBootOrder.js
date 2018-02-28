@@ -5,16 +5,23 @@ import mapServices from "./mapServices";
 import type {Dependency} from "./types/Dependency";
 import {ServiceMap} from "./ServiceMap";
 
-function resolveDependencies (definition: ServiceDefinition, mapped: ServiceMap): ServiceDefinition[] {
+function resolveBootChain (definition: ServiceDefinition, mapped: ServiceMap, chain: ServiceDefinition[] = []): ServiceDefinition[] {
   const dependencies: Dependency[] = definition.dependencies || [];
 
   const resolved = [];
 
+  if (chain.includes(definition)) {
+    throw new Error(`Circular dependency detected.\n${JSON.stringify(definition, null, 2)}`);
+  }
+
+  chain.push(definition);
+
   for (const dependency of dependencies) {
     mapped.resolveDependency(dependency).forEach(def => {
-      resolved.push.apply(resolved, resolveDependencies(def, mapped));
+      resolved.push.apply(resolved, resolveBootChain(def, mapped, chain));
     });
   }
+
   resolved.push(definition);
   return resolved;
 }
@@ -30,7 +37,7 @@ export default function resolveBootOrder(definitions: ServiceDefinition[]) {
 
   const resolved = [];
   for (const definition of definitions) {
-    resolved.push.apply(resolved, resolveDependencies(definition, mapped));
+    resolved.push.apply(resolved, resolveBootChain(definition, mapped));
   }
 
   return removeDuplicates(resolved);
