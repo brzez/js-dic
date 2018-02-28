@@ -14,11 +14,30 @@ export class ServiceMap {
   }
 
   resolveDependency(dependency: Dependency) {
-    switch (dependency.type) {
+    const {type, name} = dependency;
+
+    switch (type) {
       case TYPE_SERVICE:
-        return this.resolveService(dependency.name);
+        return this.resolveService(name);
       case TYPE_TAG:
-        return this.resolveTag(dependency.name)
+        return this.resolveTag(name)
     }
+
+    throw new Error(`Invalid type ${type} for dependency [${name}]`);
+  }
+
+  resolveService (name: string): ServiceDefinition {
+    const service = this.byName[name];
+    // todo: prettier errors
+    if (service) {
+      return service;
+    }
+
+    throw new Error(`Service named ${name} not found`);
+  }
+
+  resolveTag (name: string): ServiceDefinition[] {
+    const tag = this.byTag[name];
+    return tag ? tag : [];
   }
 }
