@@ -3,7 +3,7 @@
 import {describe, it} from 'mocha'
 import {expect} from 'chai'
 import mockService from "./mock/mockService";
-import mapServices, {mapByName} from "../src/mapServices";
+import mapServices, {mapByName, mapByTags} from "../src/mapServices";
 
 describe('mapServices', () => {
   describe('mapByName', () => {
@@ -20,11 +20,44 @@ describe('mapServices', () => {
     });
     it('returns false when name not found', () => {
       expect(mapByName(mockService({}), {})).to.be.false;
-    })
+    });
     it('throws when duplicate value found', () => {
       const store = {foo: 1};
       expect(() => mapByName(mockService({name: 'foo'}), store)).to.throw(Error);
     })
+  });
+
+  describe('mapByTags', () => {
+    it('adds services to store by tag', () => {
+      const store = {};
+      const tag_a = mockService({tags: 'tag_a'});
+      const tag_b = mockService({tags: ['tag_b']});
+
+      const result = mapByTags(tag_a, store);
+      mapByTags(tag_b, store);
+
+      expect(result).to.be.true;
+
+      expect(store.tag_a).to.be.an('array').that.includes(tag_a);
+      expect(store.tag_b).to.be.an('array').that.includes(tag_b);
+    });
+    it('pushes to array', () => {
+      const tag_a = mockService({tags: 'tag_a'});
+      const store = {
+        tag_a: [1, 2]
+      };
+
+      const result = mapByTags(tag_a, store);
+
+      expect(result).to.be.true;
+
+      expect(store.tag_a).to.be.an('array');
+      expect(store.tag_a).to.be.deep.equal([1, 2, tag_a])
+    });
+
+    it('returns false when tag not found', () => {
+      expect(mapByTags(mockService({}), {})).to.be.false;
+    });
   });
 
   it('resolves to proper object when no services provided', () => {
