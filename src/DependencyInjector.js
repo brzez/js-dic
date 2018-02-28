@@ -16,8 +16,16 @@ export default class DependencyInjector {
     // todo: refactor
     for (const definition of this.bootOrder) {
       const dependencies = definition.dependencies || [];
-      const resolved = dependencies.map(dep => this.repository.resolveDependency(dep).value);
+      const resolved = dependencies.map(dep => {
+        const resolved = this.repository.resolveDependency(dep);
+        if (dep.type === 'service') {
+          return resolved[0].value
+        }
+        return resolved.map(s => s.value)
+      });
       definition.value = await definition.factory.apply(definition.factory, resolved);
     }
+
+    return this.repository;
   }
 }
