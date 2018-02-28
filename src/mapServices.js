@@ -20,7 +20,7 @@ export function mapByName (def: ServiceDefinition, store: {[string]: ServiceDefi
   return true;
 }
 
-export function mapByTags (def: ServiceDefinition, store: {[string]: ServiceDefinition}): boolean {
+export function mapByTags (def: ServiceDefinition, store: {[string]: ServiceDefinition[]}): boolean {
   const {tags} = def;
 
   if (!tags) {

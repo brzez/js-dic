@@ -28,6 +28,5 @@ export default class Kernel {
   bootServiceDefinition(def: ServiceDefinition, map: ServiceMap) {
     const dependencies = def.dependencies || [];
     const resolved = dependencies.map(dep => map.resolveDependency(dep));
-    console.log(def, resolved)
   }
 }

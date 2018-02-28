@@ -22,7 +22,7 @@ describe('mapServices', () => {
       expect(mapByName(mockService({}), {})).to.be.false;
     });
     it('throws when duplicate value found', () => {
-      const store = {foo: 1};
+      const store = {foo: mockService({name: 'foo'})};
       expect(() => mapByName(mockService({name: 'foo'}), store)).to.throw(Error);
     })
   });
@@ -44,7 +44,7 @@ describe('mapServices', () => {
     it('pushes to array', () => {
       const tag_a = mockService({tags: 'tag_a'});
       const store = {
-        tag_a: [1, 2]
+        tag_a: [mockService({tags: 'tag_a'}), mockService({tags: 'tag_a'})]
       };
 
       const result = mapByTags(tag_a, store);
