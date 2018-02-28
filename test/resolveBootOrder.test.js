@@ -15,7 +15,7 @@ describe('resolveBootOrder', () => {
       ])).to.throw();
     });
 
-    it('resolves ', () => {
+    it('resolves dependencies in correct order', () => {
       const a = mockService({name: 'a'}, service('b'));
       const b = mockService({name: 'b'}, service('c'));
       const c = mockService({name: 'c'});

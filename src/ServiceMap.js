@@ -13,7 +13,7 @@ export class ServiceMap {
     this.anonymous = anonymous;
   }
 
-  resolveDependency(dependency: Dependency) {
+  resolveDependency(dependency: Dependency): ServiceDefinition[] {
     const {type, name} = dependency;
 
     switch (type) {
@@ -30,7 +30,7 @@ export class ServiceMap {
     const service = this.byName[name];
     // todo: prettier errors
     if (service) {
-      return service;
+      return [service];
     }
 
     throw new Error(`Service named ${name} not found`);

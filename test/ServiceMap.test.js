@@ -17,7 +17,7 @@ describe('ServiceMap', () => {
         foo: [fooTag]
       }, []);
 
-    expect(sm.resolveDependency(service('foo'))).to.be.equal(fooService);
+    expect(sm.resolveDependency(service('foo'))).to.be.deep.equal([fooService]);
     expect(sm.resolveDependency(tag('foo'))).to.be.deep.equal([fooTag]);
 
     expect(sm.resolveDependency(tag('does not exist'))).to.be.an('array').that.has.lengthOf(0);
