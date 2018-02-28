@@ -29,7 +29,17 @@ describe('resolveBootOrder', () => {
       const b = mockService({name: 'b'}, service('c'));
       const c = mockService({name: 'c'});
 
-      expect(resolveBootOrder([a, b, c])).to.have.members([c, b, a]);
+      const result = resolveBootOrder([a, b, c]);
+      expect(result).to.have.members([c, b, a]);
+    });
+
+    it('resolves islands', () => {
+      const a = mockService({name: 'a'}, service('b'));
+      const b = mockService({name: 'b'});
+      const c = mockService({name: 'c'}, service('a'));
+
+      const result = resolveBootOrder([a, b, c]);
+      expect(result).to.have.members([c, b, a]);
     })
   })
 });
