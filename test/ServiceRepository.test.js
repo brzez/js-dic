@@ -3,14 +3,14 @@
 import {describe, it} from 'mocha'
 import {expect} from 'chai'
 import mockService from "./mock/mockService";
-import {ServiceMap} from "../src/ServiceMap";
 import {service, tag} from "../src/helpers";
+import {ServiceRepository} from "../src/ServiceRepository";
 
 describe('ServiceRepository', () => {
   it('resolves dependencies', () => {
     const fooService = mockService({name: 'foo'});
     const fooTag = mockService({tags: 'foo'});
-    const sm = new ServiceMap({
+    const sm = new ServiceRepository({
         foo: fooService
       },
       {
@@ -24,7 +24,7 @@ describe('ServiceRepository', () => {
   });
 
   it('throws when service doesnt exist', () => {
-    const sm = new ServiceMap({}, {}, []);
+    const sm = new ServiceRepository({}, {}, []);
     expect(() => sm.resolveService('foo')).to.throw(Error)
   })
 });

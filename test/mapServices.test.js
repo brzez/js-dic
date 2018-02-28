@@ -43,8 +43,9 @@ describe('mapServices', () => {
     });
     it('pushes to array', () => {
       const tag_a = mockService({tags: 'tag_a'});
+      const tag_a2 = mockService({tags: 'tag_a'});
       const store = {
-        tag_a: [mockService({tags: 'tag_a'}), mockService({tags: 'tag_a'})]
+        tag_a: [tag_a2]
       };
 
       const result = mapByTags(tag_a, store);
@@ -52,7 +53,7 @@ describe('mapServices', () => {
       expect(result).to.be.true;
 
       expect(store.tag_a).to.be.an('array');
-      expect(store.tag_a).to.be.deep.equal([1, 2, tag_a])
+      expect(store.tag_a).to.be.deep.equal([tag_a2, tag_a])
     });
 
     it('returns false when tag not found', () => {
