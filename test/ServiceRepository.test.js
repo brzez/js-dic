@@ -6,7 +6,7 @@ import mockService from "./mock/mockService";
 import {ServiceMap} from "../src/ServiceMap";
 import {service, tag} from "../src/helpers";
 
-describe('ServiceMap', () => {
+describe('ServiceRepository', () => {
   it('resolves dependencies', () => {
     const fooService = mockService({name: 'foo'});
     const fooTag = mockService({tags: 'foo'});

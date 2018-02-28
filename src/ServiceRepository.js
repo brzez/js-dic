@@ -2,7 +2,7 @@ import type {ServiceDefinition} from "./types/ServiceDefinition";
 import type {Dependency} from "./types/Dependency";
 import {TYPE_SERVICE, TYPE_TAG} from "./types/Dependency";
 
-export class ServiceMap {
+export class ServiceRepository {
   byName: { [string]: ServiceDefinition };
   byTag: { [string]: ServiceDefinition[] };
   anonymous: ServiceDefinition[];

@@ -1,11 +1,9 @@
 // @flow
-
-
 import type {ServiceDefinition} from "./types/ServiceDefinition";
 import Container from "./Container";
 import resolveBootOrder from "./resolveBootOrder";
 import mapServices from "./mapServices";
-import {ServiceMap} from "./ServiceMap";
+import {ServiceRepository} from "./ServiceRepository";
 
 export default class Kernel {
   services: ServiceDefinition[];
@@ -25,7 +23,7 @@ export default class Kernel {
     // create container w/ booted services
   }
 
-  bootServiceDefinition(def: ServiceDefinition, map: ServiceMap) {
+  bootServiceDefinition(def: ServiceDefinition, map: ServiceRepository) {
     const dependencies = def.dependencies || [];
     const resolved = dependencies.map(dep => map.resolveDependency(dep));
   }

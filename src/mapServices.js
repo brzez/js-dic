@@ -1,9 +1,10 @@
 // @flow
 
 import type {ServiceDefinition} from "./types/ServiceDefinition";
-import {ServiceMap} from "./ServiceMap";
+import {ServiceRepository} from "./ServiceRepository";
 
 // todo: check types name => string, def.tags = string|string[] etc.
+// todo: merge with service repo
 export function mapByName (def: ServiceDefinition, store: {[string]: ServiceDefinition}): boolean {
   const {name} = def;
 
@@ -40,7 +41,7 @@ export function mapByTags (def: ServiceDefinition, store: {[string]: ServiceDefi
   return tagArray.length !== 0;
 }
 
-export default function mapServices (defs: ServiceDefinition[]): ServiceMap {
+export default function mapServices (defs: ServiceDefinition[]): ServiceRepository {
   const byName: {[string]: ServiceDefinition} = {};
   const byTag: {[string]: ServiceDefinition[]} = {};
   const anonymous: ServiceDefinition[] = [];
@@ -52,5 +53,5 @@ export default function mapServices (defs: ServiceDefinition[]): ServiceMap {
     anonymous.push(def);
   });
 
-  return new ServiceMap(byName, byTag, anonymous);
+  return new ServiceRepository(byName, byTag, anonymous);
 }
