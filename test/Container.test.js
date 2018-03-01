@@ -11,7 +11,7 @@ describe('Container', () => {
     const c = new Container({
       resolveDependency (dep) {
         expect(dep).to.be.equal(foo);
-        return {value: 1}
+        return [{value: 1}]
       }
     });
 
