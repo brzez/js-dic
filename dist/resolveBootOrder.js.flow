@@ -14,12 +14,10 @@ function resolveBootChain (service: Service, repository: ServiceRepository, chai
     throw new Error(`Circular dependency detected.\n${JSON.stringify(service, null, 2)}`);
   }
 
-  chain.push(service);
-
   for (const dependency of dependencies) {
     const dependencies = repository.resolveDependency(dependency);
     toArray(dependencies).forEach(def => {
-      resolved.push.apply(resolved, resolveBootChain(def, repository, chain));
+      resolved.push.apply(resolved, resolveBootChain(def, repository, [service]));
     });
   }
 

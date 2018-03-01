@@ -26,8 +26,6 @@ function resolveBootChain(service, repository) {
     throw new Error("Circular dependency detected.\n" + JSON.stringify(service, null, 2));
   }
 
-  chain.push(service);
-
   var _iteratorNormalCompletion = true;
   var _didIteratorError = false;
   var _iteratorError = undefined;
@@ -38,7 +36,7 @@ function resolveBootChain(service, repository) {
 
       var _dependencies = repository.resolveDependency(dependency);
       (0, _util.toArray)(_dependencies).forEach(function (def) {
-        resolved.push.apply(resolved, resolveBootChain(def, repository, chain));
+        resolved.push.apply(resolved, resolveBootChain(def, repository, [service]));
       });
     }
   } catch (err) {
