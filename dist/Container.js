@@ -26,6 +26,22 @@ var Container = function () {
         return s.value;
       }) : service.value;
     }
+  }, {
+    key: "inject",
+    value: function inject(injectable) {
+      var _this = this;
+
+      var thisArg = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
+      var factory = injectable.factory,
+          dependencies = injectable.dependencies;
+
+
+      var resolved = (dependencies || []).map(function (dep) {
+        return _this.get(dep);
+      });
+
+      return factory.apply(thisArg, resolved);
+    }
   }]);
 
   return Container;
