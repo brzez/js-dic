@@ -19,7 +19,7 @@ boot([
     tags: 'foo', // optional, string|string[]
     
     factory: (dependency1, dependency2, some_tags) => {},
-    requires: [
+    dependencies: [
       service('dependency1'),
       service('dependency2'),
       tag('some_tags')
@@ -40,5 +40,10 @@ type Injectable = {
 ```
 
 builtin services
-- $inject - injects dependencies to a factory method *Injectable*
-- $ready
+- $ready (callback: ReadyCallback)
+```js
+type ReadyCallback = {
+  (container: Container): any;
+}
+```
+
