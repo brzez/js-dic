@@ -1,5 +1,5 @@
 // @flow
 
 export type ServiceFactory = {
-  (...args: any[]): any
+  (...args: any[]): any;
 };

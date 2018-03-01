@@ -1,11 +1,13 @@
 // @flow
 import 'babel-polyfill'
-import type {ServiceDefinitions} from './Kernel'
-import Kernel from './Kernel'
+import type {ServiceDefinition} from "./types/ServiceDefinition";
+import Kernel from "./Kernel";
 
-export default async function boot (services: ServiceDefinitions) {
+
+export {tag, service} from './helpers'
+
+
+export default async function boot(services: ServiceDefinition[]) {
   const kernel = new Kernel(services);
   return await kernel.boot();
 }
-
-export {serviceReference, tagReference} from './di/Dependency'

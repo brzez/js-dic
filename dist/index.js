@@ -1,28 +1,28 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
-exports.tagReference = exports.serviceReference = undefined;
+exports.service = exports.tag = undefined;
 
-var _Dependency = require('./di/Dependency');
+var _helpers = require("./helpers");
 
-Object.defineProperty(exports, 'serviceReference', {
+Object.defineProperty(exports, "tag", {
   enumerable: true,
   get: function get() {
-    return _Dependency.serviceReference;
+    return _helpers.tag;
   }
 });
-Object.defineProperty(exports, 'tagReference', {
+Object.defineProperty(exports, "service", {
   enumerable: true,
   get: function get() {
-    return _Dependency.tagReference;
+    return _helpers.service;
   }
 });
 
-require('babel-polyfill');
+require("babel-polyfill");
 
-var _Kernel = require('./Kernel');
+var _Kernel = require("./Kernel");
 
 var _Kernel2 = _interopRequireDefault(_Kernel);
 
@@ -42,10 +42,10 @@ exports.default = function () {
             return kernel.boot();
 
           case 3:
-            return _context.abrupt('return', _context.sent);
+            return _context.abrupt("return", _context.sent);
 
           case 4:
-          case 'end':
+          case "end":
             return _context.stop();
         }
       }

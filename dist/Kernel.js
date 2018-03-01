@@ -1,4 +1,4 @@
-'use strict';
+"use strict";
 
 Object.defineProperty(exports, "__esModule", {
   value: true
@@ -6,29 +6,13 @@ Object.defineProperty(exports, "__esModule", {
 
 var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
 
-var _Service = require('./di/Service');
+var _Container = require("./Container");
 
-var _Service2 = _interopRequireDefault(_Service);
+var _Container2 = _interopRequireDefault(_Container);
 
-var _ServiceContainer = require('./di/ServiceContainer');
+var _DependencyInjector = require("./DependencyInjector");
 
-var _ServiceContainer2 = _interopRequireDefault(_ServiceContainer);
-
-var _normalizeDependencies = require('./normalizeDependencies');
-
-var _normalizeDependencies2 = _interopRequireDefault(_normalizeDependencies);
-
-var _createInject = require('./createInject');
-
-var _createInject2 = _interopRequireDefault(_createInject);
-
-var _createGet = require('./createGet');
-
-var _createGet2 = _interopRequireDefault(_createGet);
-
-var _createReady = require('./createReady');
-
-var _createReady2 = _interopRequireDefault(_createReady);
+var _DependencyInjector2 = _interopRequireDefault(_DependencyInjector);
 
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
@@ -38,86 +22,59 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 var Kernel = function () {
   function Kernel(services) {
-    var appendInternals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+    var applyInternals = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
 
     _classCallCheck(this, Kernel);
 
-    this.booted = false;
-    this.readyListeners = [];
+    this.readyCallbacks = [];
 
     this.services = services;
 
-    if (appendInternals) {
-      this.appendInternals();
+    if (applyInternals) {
+      this.applyInternals();
     }
   }
 
   _createClass(Kernel, [{
-    key: 'appendInternals',
-    value: function appendInternals() {
-      var internals = {
-        $inject: (0, _createInject2.default)(this),
-        $get: (0, _createGet2.default)(this),
-        $ready: (0, _createReady2.default)(this)
-      };
-      Object.assign(this.services, internals);
-    }
-  }, {
-    key: 'createServiceFromObjectDef',
-    value: function createServiceFromObjectDef(name, def) {
-      return new _Service2.default(name, def.tags || [], def.factory, (0, _normalizeDependencies2.default)(def.dependencies));
-    }
-  }, {
-    key: 'normalizeService',
-    value: function normalizeService(name, def) {
-      if (typeof def === 'function') {
-        return new _Service2.default(name, [], def, []);
-      }
-
-      return this.createServiceFromObjectDef(name, def);
-    }
-  }, {
-    key: 'normalizeServices',
-    value: function normalizeServices() {
+    key: "applyInternals",
+    value: function applyInternals() {
       var _this = this;
 
-      return Object.keys(this.services).map(function (name) {
-        return _this.normalizeService(name, _this.services[name]);
+      this.services.push({
+        name: '$ready',
+        factory: function factory() {
+          return function (callback) {
+            _this.readyCallbacks.push(callback);
+          };
+        }
       });
     }
   }, {
-    key: 'boot',
+    key: "boot",
     value: function () {
       var _ref = _asyncToGenerator( /*#__PURE__*/regeneratorRuntime.mark(function _callee() {
-        var _this2 = this;
-
-        var normalized;
+        var di, repository, container;
         return regeneratorRuntime.wrap(function _callee$(_context) {
           while (1) {
             switch (_context.prev = _context.next) {
               case 0:
-                if (!this.booted) {
-                  _context.next = 2;
-                  break;
-                }
+                di = new _DependencyInjector2.default(this.services);
+                _context.next = 3;
+                return di.boot();
 
-                throw new Error('Kernel already booted');
+              case 3:
+                repository = _context.sent;
+                container = new _Container2.default(repository);
 
-              case 2:
-                this.container = new _ServiceContainer2.default();
-                normalized = this.normalizeServices();
-                _context.next = 6;
-                return this.container.boot(normalized);
 
-              case 6:
-                this.booted = true;
-                this.readyListeners.forEach(function (callback) {
-                  return callback(_this2.container);
+                this.readyCallbacks.forEach(function (callback) {
+                  return callback(container);
                 });
-                return _context.abrupt('return', this.container);
 
-              case 9:
-              case 'end':
+                return _context.abrupt("return", container);
+
+              case 7:
+              case "end":
                 return _context.stop();
             }
           }
