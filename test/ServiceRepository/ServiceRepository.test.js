@@ -10,21 +10,16 @@ describe('ServiceRepository', () => {
   it('resolves dependencies', () => {
     const fooService = mockService({name: 'foo'});
     const fooTag = mockService({tags: 'foo'});
-    const sm = new ServiceRepository({
-        foo: fooService
-      },
-      {
-        foo: [fooTag]
-      }, []);
+    const sm = new ServiceRepository([fooService, fooTag]);
 
-    expect(sm.resolveDependency(service('foo'))).to.be.deep.equal([fooService]);
-    expect(sm.resolveDependency(tag('foo'))).to.be.deep.equal([fooTag]);
+    expect(sm.resolveDependency(service('foo')).definition).to.be.deep.equal(fooService);
+    expect(sm.resolveDependency(tag('foo')).map(s => s.definition)).to.be.deep.equal([fooTag]);
 
     expect(sm.resolveDependency(tag('does not exist'))).to.be.an('array').that.has.lengthOf(0);
   });
 
   it('throws when service doesnt exist', () => {
-    const sm = new ServiceRepository({}, {}, []);
+    const sm = new ServiceRepository([]);
     expect(() => sm.resolveService('foo')).to.throw(Error)
   })
 });
