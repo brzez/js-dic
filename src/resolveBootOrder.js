@@ -3,7 +3,7 @@
 import type {ServiceDefinition} from "./types/ServiceDefinition";
 import mapServices from "./mapServices";
 import type {Dependency} from "./types/Dependency";
-import {ServiceRepository} from "./ServiceRepository";
+import {ServiceRepository} from "./ServiceRepository/ServiceRepository";
 
 function resolveBootChain (definition: ServiceDefinition, mapped: ServiceRepository, chain: ServiceDefinition[] = []): ServiceDefinition[] {
   const dependencies: Dependency[] = definition.dependencies || [];

@@ -2,9 +2,9 @@
 
 import {describe, it} from 'mocha'
 import {expect} from 'chai'
-import mockService from "./mock/mockService";
-import {service, tag} from "../src/helpers";
-import {ServiceRepository} from "../src/ServiceRepository";
+import mockService from "../mock/mockService";
+import {service, tag} from "../../src/helpers";
+import {ServiceRepository} from "../../src/ServiceRepository/ServiceRepository";
 
 describe('ServiceRepository', () => {
   it('resolves dependencies', () => {

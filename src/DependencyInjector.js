@@ -1,4 +1,4 @@
-import {ServiceRepository} from "./ServiceRepository";
+import {ServiceRepository} from "./ServiceRepository/ServiceRepository";
 import type {ServiceDefinition} from "./types/ServiceDefinition";
 import resolveBootOrder from "./resolveBootOrder";
 import mapServices from "./mapServices";

@@ -1,6 +1,6 @@
 // @flow
 
-import {ServiceRepository} from "./ServiceRepository";
+import {ServiceRepository} from "./ServiceRepository/ServiceRepository";
 import type {Dependency} from "./types/Dependency";
 import {TYPE_SERVICE, TYPE_TAG} from "./types/Dependency";
 
