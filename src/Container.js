@@ -2,7 +2,6 @@
 
 import {ServiceRepository} from "./ServiceRepository/ServiceRepository";
 import type {Dependency} from "./types/Dependency";
-import {TYPE_SERVICE, TYPE_TAG} from "./types/Dependency";
 
 export default class Container {
   repository: ServiceRepository;
@@ -14,13 +13,6 @@ export default class Container {
   get (dependency: Dependency) {
     const service = this.repository.resolveDependency(dependency);
 
-    switch (dependency.type) {
-      case TYPE_SERVICE:
-        return service[0].value;
-      case TYPE_TAG:
-        return service.map(s => s.value)
-    }
-
-    throw new Error(`Invalid type ${dependency.type}`)
+    return Array.isArray(service) ? service.map(s => s.value) : service.value;
   }
 }

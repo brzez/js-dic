@@ -1,29 +1,27 @@
 import {ServiceRepository} from "./ServiceRepository/ServiceRepository";
 import type {ServiceDefinition} from "./types/ServiceDefinition";
 import resolveBootOrder from "./resolveBootOrder";
-import mapServices from "./mapServices";
+import Service from "./ServiceRepository/Service";
 
 export default class DependencyInjector {
   repository: ServiceRepository;
-  bootOrder: ServiceDefinition[];
+  bootOrder: Service[];
 
   constructor(services: ServiceDefinition[]) {
-    this.bootOrder = resolveBootOrder(services);
-    this.repository = mapServices(services);
+    this.repository = new ServiceRepository(services);
+    this.bootOrder = resolveBootOrder(this.repository);
   }
 
   async boot() {
     // todo: refactor
-    for (const definition of this.bootOrder) {
+    for (const service of this.bootOrder) {
+      const {definition} = service;
       const dependencies = definition.dependencies || [];
       const resolved = dependencies.map(dep => {
         const resolved = this.repository.resolveDependency(dep);
-        if (dep.type === 'service') {
-          return resolved[0].value
-        }
-        return resolved.map(s => s.value)
+        return Array.isArray(resolved) ? resolved.map(s => s.value) : resolved.value;
       });
-      definition.value = await definition.factory.apply(definition.factory, resolved);
+      service.boot(await definition.factory.apply(definition.factory, resolved))
     }
 
     return this.repository;

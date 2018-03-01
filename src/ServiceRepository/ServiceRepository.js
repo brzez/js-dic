@@ -10,7 +10,7 @@ export class ServiceRepository {
     this.all = definitions.map(def => new Service(def));
   }
 
-  resolveDependency(dependency: Dependency): Service[] {
+  resolveDependency(dependency: Dependency): Service|Service[] {
     const {type, name} = dependency;
 
     switch (type) {

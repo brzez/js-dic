@@ -1,43 +1,43 @@
 // @flow
 
-import type {ServiceDefinition} from "./types/ServiceDefinition";
-import mapServices from "./mapServices";
 import type {Dependency} from "./types/Dependency";
 import {ServiceRepository} from "./ServiceRepository/ServiceRepository";
+import Service from "./ServiceRepository/Service";
+import {toArray} from "./util";
 
-function resolveBootChain (definition: ServiceDefinition, mapped: ServiceRepository, chain: ServiceDefinition[] = []): ServiceDefinition[] {
-  const dependencies: Dependency[] = definition.dependencies || [];
+function resolveBootChain (service: Service, repository: ServiceRepository, chain: Service[] = []): Service[] {
+  const dependencies: Dependency[] = service.definition.dependencies || [];
 
   const resolved = [];
 
-  if (chain.includes(definition)) {
-    throw new Error(`Circular dependency detected.\n${JSON.stringify(definition, null, 2)}`);
+  if (chain.includes(service)) {
+    throw new Error(`Circular dependency detected.\n${JSON.stringify(service, null, 2)}`);
   }
 
-  chain.push(definition);
+  chain.push(service);
 
   for (const dependency of dependencies) {
-    mapped.resolveDependency(dependency).forEach(def => {
-      resolved.push.apply(resolved, resolveBootChain(def, mapped, chain));
+    const dependencies = repository.resolveDependency(dependency);
+    toArray(dependencies).forEach(def => {
+      resolved.push.apply(resolved, resolveBootChain(def, repository, chain));
     });
   }
 
-  resolved.push(definition);
+  resolved.push(service);
   return resolved;
 }
 
-function removeDuplicates (definitions: ServiceDefinition[]) {
+function removeDuplicates (definitions: Service[]) {
   return definitions.filter((dep, index, definitions) => {
     return definitions.indexOf(dep) === index
   })
 }
 
-export default function resolveBootOrder(definitions: ServiceDefinition[]) {
-  const mapped = mapServices(definitions);
-
+export default function resolveBootOrder(repository: ServiceRepository): Service[] {
   const resolved = [];
-  for (const definition of definitions) {
-    resolved.push.apply(resolved, resolveBootChain(definition, mapped));
+
+  for (const service of repository.all) {
+    resolved.push.apply(resolved, resolveBootChain(service, repository));
   }
 
   return removeDuplicates(resolved);
