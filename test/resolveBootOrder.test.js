@@ -60,5 +60,16 @@ describe('resolveBootOrder', () => {
       const result = resolveBootOrder(repo([tag_b2, a, tag_b1]));
       expect(toDefinitions(result)).to.be.deep.equal([tag_b2, tag_b1, a]);
     })
+  });
+
+  it('checks circular dependencies properly', () => {
+    const dep = () => resolveBootOrder(repo([
+      mockServiceDefinition({name: 'a'}, service('config')),
+      mockServiceDefinition({name: 'config'}),
+      mockServiceDefinition({name: 'b'}, service('config'), service('a'), tag('foo')),
+      mockServiceDefinition({tags: 'foo'})
+    ]));
+
+    expect(dep).to.not.throw()
   })
 });
