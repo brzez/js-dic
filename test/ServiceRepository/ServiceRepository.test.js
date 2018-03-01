@@ -2,14 +2,14 @@
 
 import {describe, it} from 'mocha'
 import {expect} from 'chai'
-import mockService from "../mock/mockService";
+import mockServiceDefinition from "../mock/mockServiceDefinition";
 import {service, tag} from "../../src/helpers";
 import {ServiceRepository} from "../../src/ServiceRepository/ServiceRepository";
 
 describe('ServiceRepository', () => {
   it('resolves dependencies', () => {
-    const fooService = mockService({name: 'foo'});
-    const fooTag = mockService({tags: 'foo'});
+    const fooService = mockServiceDefinition({name: 'foo'});
+    const fooTag = mockServiceDefinition({tags: 'foo'});
     const sm = new ServiceRepository([fooService, fooTag]);
 
     expect(sm.resolveDependency(service('foo')).definition).to.be.deep.equal(fooService);
